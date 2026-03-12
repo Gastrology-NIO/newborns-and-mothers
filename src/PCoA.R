@@ -1,8 +1,34 @@
 
+PCoA_B_ks_K <- function(ps_all, folder_out){
+  ps_genus<-tax_glom(ps_all, "genus")
+  sample_data(ps_genus)$mergedLocStad<-mapply(paste0, sample_data(ps_genus)$Location,";", sample_data(ps_genus)$Stadium)
+  pseq.compositional <- microbiome::transform(ps_genus, "clr")
+  ps.pcoa.a<-ordinate(pseq.compositional, method="PCoA", distance="euclidean")
+  p<-plot_ordination(pseq.compositional, ps.pcoa.a, color = "mergedLocStad", shape="Type", label="Organism_id") + 
+    geom_point(size = 3) + theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust=0.5))
+  ggsave(
+    paste(folder_out, "pca_all_mothers_clr_aitchison.svg"),
+    plot = p,
+  )
+
+  unique(sample_data(ps_genus)$mergedLocStad) -> locations
+  for (location in locations){
+        ps_tmp <- subset_samples(ps_genus, mergedLocStad %in% c(location))
+        pseq.compositional <- microbiome::transform(ps_tmp, "clr")
+        ps.pcoa.a <- ordinate(pseq.compositional, method="PCoA", distance="euclidean")
+        p <- plot_ordination(pseq.compositional, ps.pcoa.a, color="Type", label="Organism_id") + 
+        geom_point(size = 3) + ggtitle(location)
+        ggsave(
+          paste0(folder_out, "PcOA/PCOA_", location, "_clr_aitchison.svg"),
+          plot = p,
+        )
+
+  }
+}
 
 
-PCoA <- function(ps, folder_out){
-  ps_genus<-tax_glom(ps, "genus")
+PCoA <- function(ps_all, folder_out){
+  ps_genus<-tax_glom(ps_all, "genus")
   sample_data(ps_genus)$mergedLocStad<-mapply(paste0, sample_data(ps_genus)$Location,";", sample_data(ps_genus)$Stadium)
   pseq.compositional <- microbiome::transform(ps_genus, "clr")
   ps.pcoa.a<-ordinate(pseq.compositional, method="PCoA", distance="euclidean")
