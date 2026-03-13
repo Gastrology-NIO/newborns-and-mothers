@@ -18,7 +18,7 @@ if (location!=location2){
 res_anosim<-res_anosim[c(2:nrow(res_anosim)),]
 write.csv2(res_anosim, paste0(folder_out, "anosim_euclidean_dist_bh.csv"))
 
-ps_genus<-tax_glom(ps, "family")
+ps_genus<-tax_glom(ps, "genus")
 physeq_clr <- microbiome::transform(ps_genus, "clr")
 ps_dist_matrix <- phyloseq::distance(physeq_clr, method ="euclidean")
 sample_data(ps_dist_matrix)$location_type<-paste(sample_data(ps_dist_matrix)$Location, sample_data(ps_dist_matrix)$Type)
