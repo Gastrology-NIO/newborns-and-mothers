@@ -79,3 +79,66 @@ write.csv2(tmp_res, paste0(folder_out,"B vs K/differential_ancom_deseq2_",locati
 
 
 
+
+
+
+ps_genus<-tax_glom(ps_all, "genus")
+ps_genus_K<-subset_samples(ps_genus, Type =="K")
+unique(sample_data(ps_genus_K)$mergedLocStad)-> locations
+df_K_result <- data.frame(matrix(0, nrow = length(locations), ncol = length(locations)))
+colnames(df_K_result) <- locations
+rownames(df_K_result) <- locations
+folder_out<-"/home/chwast/nio/noworodki/new_result/noworodki i matki/v3 - matki i noworodki razem/differential_bacteria/K/"
+for (location in locations){
+  for (location2 in locations){
+    if (location!=location2){
+      if (!(location == "Cheek;Mother" && location2 =="Cervix;Mother")) {
+        if (!(location2 == "Cheek;Mother" && location =="Cervix;Mother")){
+          if (!(location == "Stool;Mother" && location2 =="Cervix;Mother")){
+            if (!(location2 == "Stool;Mother" && location =="Cervix;Mother")){
+              if (!(location == "Stomach;Newborn" && location2 =="Cervix;Mother")){
+                if (!(location2 == "Stomach;Newborn" && location =="Cervix;Mother")){
+    file<-read.csv2(paste0(folder_out,"differential_ancom_deseq2_",location,"_", location2, "_K.csv"))
+    lfc_name<-colnames(file)[grepl("lfc_mergedLocStad", colnames(file))]
+    q_name<-colnames(file)[grepl("p_mergedLocStad", colnames(file))]
+    tmp_1<-file[file[,q_name] < 0.1,]
+    tmp_1<-tmp_1[tmp_1[,lfc_name] < 1,]
+    tmp_1<-tmp_1[tmp_1[,lfc_name] > -1,]
+    df_K_result[location, location2]<-nrow(tmp_1)
+    
+    
+                }}}}}}}}}
+
+write.csv2(df_K_result, paste0(folder_out,"pval_0.1_K.csv"))
+
+
+
+
+ps_genus_K<-subset_samples(ps_genus, Type =="B")
+unique(sample_data(ps_genus_K)$mergedLocStad)-> locations
+df_K_result <- data.frame(matrix(0, nrow = length(locations), ncol = length(locations)))
+colnames(df_K_result) <- locations
+rownames(df_K_result) <- locations
+folder_out<-"/home/chwast/nio/noworodki/new_result/noworodki i matki/v3 - matki i noworodki razem/differential_bacteria/B/"
+for (location in locations){
+  for (location2 in locations){
+    if (location!=location2){
+      if (!(location == "Cheek;Mother" && location2 =="Cervix;Mother")) {
+        if (!(location2 == "Cheek;Mother" && location =="Cervix;Mother")){
+          if (!(location == "Stool;Mother" && location2 =="Cervix;Mother")){
+            if (!(location2 == "Stool;Mother" && location =="Cervix;Mother")){
+              if (!(location == "Stomach;Newborn" && location2 =="Cervix;Mother")){
+                if (!(location2 == "Stomach;Newborn" && location =="Cervix;Mother")){
+                  file<-read.csv2(paste0(folder_out,"differential_ancom_deseq2_",location,"_", location2, "_B.csv"))
+                  lfc_name<-colnames(file)[grepl("lfc_mergedLocStad", colnames(file))]
+                  q_name<-colnames(file)[grepl("Q_mergedLocStad", colnames(file))]
+                  tmp_1<-file[file[,q_name] < 0.1,]
+                  tmp_1<-tmp_1[tmp_1[,lfc_name] < 1,]
+                  tmp_1<-tmp_1[tmp_1[,lfc_name] > -1,]
+                  df_K_result[location, location2]<-nrow(tmp_1)
+                  
+                  
+                }}}}}}}}}
+
+write.csv2(df_K_result, paste0(folder_out,"Qval_0.1_B.csv"))
+
