@@ -51,6 +51,14 @@ tmp_res<-merge(tmp_res, otu_tab, by.x="taxon",by.y=0)
 write.csv2(tmp_res, paste0(folder_out,"differential_ancom_deseq2_",location,"_", location2, "_K.csv"))
 
 
+for (location in locations){
+  for (location2 in locations){
+  read.csv2()
+}
+}
+
+  
+
   sample_data(ps_genus)$mergedLocStad<-mapply(paste0, sample_data(ps_genus)$Location,";", sample_data(ps_genus)$Stadium)
 unique(sample_data(ps_genus)$mergedLocStad)-> locations
 for (location in locations){
@@ -68,3 +76,6 @@ tmp_res<-merge(tmp_res, otu_tab, by.x="taxon",by.y=0)
 write.csv2(tmp_res, paste0(folder_out,"B vs K/differential_ancom_deseq2_",location, ".csv"))
 }
 }}}}}}}}}
+
+
+
