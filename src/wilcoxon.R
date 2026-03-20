@@ -1,8 +1,11 @@
+richness<-estimate_richness(ps_genus)
+rownames(richness)<-sub("X", "", rownames(richness))
+
 sample_data(ps_genus)$mergedLocStad<-mapply(paste0, sample_data(ps_genus)$Location,";", sample_data(ps_genus)$Stadium)
 sample_data(ps_genus)$location_type<-paste(sample_data(ps_genus)$mergedLocStad, sample_data(ps_genus)$Type)
 tmp<-merge(richness, sample_data(ps_genus), by=0)
 locations_all<-unique(tmp$location_type)
-
+locations_all
 res_wil<-data.frame(location=c("a"),location2=c("a"),  chao1=c("a"), shannon=c("a"), observed=c("a"), fisher=c("a"), simpson=c("a"))
 for (location in locations_all){
 for (location2 in locations_all){
