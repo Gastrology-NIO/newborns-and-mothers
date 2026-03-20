@@ -1,4 +1,4 @@
-
+library(ggpubr)
 PCoA_B_ks_K <- function(ps_all, folder_out){
   ps_genus<-tax_glom(ps_all, "genus")
   sample_data(ps_genus)$mergedLocStad<-mapply(paste0, sample_data(ps_genus)$Location,";", sample_data(ps_genus)$Stadium)
@@ -55,4 +55,31 @@ PCoA <- function(ps_all, folder_out){
       }
     }
   }
+}
+
+PCoA_selected<- function(ps_all, save_path, type){
+  pairs<- data.frame(loc1=c('Stool;Mother', 'Cervix;Mother', 'Cheek;Mother', 'Mother placenta;Mother'), loc2=c('Rectum;Newborn','Placenta;Newborn','Stomach;Newborn','Placenta;Newborn'))
+  ps_genus<-tax_glom(ps_all, "genus")
+  ps_genus_type<-subset_samples(ps_genus, Type %in% c("B"))
+  type<-"B"
+plots <- list()
+  for (pair_no in 1:nrow(pairs)) {
+
+   sample_data(ps_genus_type)$mergedLocStad<-mapply(paste0, sample_data(ps_genus_type)$Location,";", sample_data(ps_genus_type)$Stadium) 
+    ps_tmp<-subset_samples(ps_genus_type, mergedLocStad %in% pairs[pair_no,])
+    pseq.compositional <- microbiome::transform(ps_tmp, "clr")
+    ps.pcoa.a <- ordinate(pseq.compositional, method="PCoA", distance="euclidean")
+    p <- plot_ordination(pseq.compositional, ps.pcoa.a, color = "mergedLocStad", label="Organism_id") + 
+    geom_point(size = 3)
+   plots[[pair_no]] <- p 
+  }
+  library(patchwork)
+
+  p<-wrap_plots(plots, ncol = 2) +
+    plot_annotation(tag_levels = "A")
+  
+  ggsave(
+      paste0(folder_out,type, "_PCOA_clr_aitchison.svg"),
+      plot = p,
+  )
 }
