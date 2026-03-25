@@ -38,7 +38,7 @@ p_skin_star <- p_to_stars(p_skin)
 
 shannon <- ggplot(df, aes(Location, value, fill = Type)) +
   geom_boxplot() +
-  geom_jitter(width = 0.2) +
+  geom_jitter(width = 0.2, size = 1) +
   facet_wrap(~Stadium, scales = "free_x") +
 
   # klamra dla Skin w każdym panelu
@@ -64,7 +64,8 @@ shannon <- ggplot(df, aes(Location, value, fill = Type)) +
   ) +
 
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle("Shannon")
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle("Shannon") +
+  labs(x =NULL, y = NULL)
 
 shannon
 plots[[1]] <- shannon 
@@ -118,7 +119,7 @@ p_mother_placenta_star <- p_to_stars(p_mother_placenta)
 
 chao1 <- ggplot(df, aes(Location, value, fill = Type)) +
   geom_boxplot() +
-  geom_jitter(width = 0.2) +
+  geom_jitter(width = 0.2, size = 1) +
   facet_wrap(~Stadium, scales = "free_x") +
 
   # klamra dla Skin w każdym panelu
@@ -190,7 +191,8 @@ chao1 <- ggplot(df, aes(Location, value, fill = Type)) +
 
 
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle("Chao1")
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle("Chao1") +
+  labs(x =NULL, y = NULL)
 
 chao1
 
@@ -210,8 +212,7 @@ plots[[2]] <- chao1
 df <- plot_richness(ps_genus, "Location", measures = "Simpson")$data
 
 # obliczamy pozycje x dla Skin osobno w każdym Stadium
-df$Location <- factor(df$Location, levels = unique(df$Location))
-
+df$Location <- factor(df$Location, levels = sort(unique(df$Location)))
 
 skin_pos <- df %>%
   filter(Location == "Skin") %>%
@@ -221,11 +222,12 @@ skin_pos <- df %>%
     y = max(value) * 1.1
   )
 
+#toto: fix x, aby był automatycznie wybierany
 stool_pos <- df %>%
   filter(Location == "Stool") %>%
   group_by(Stadium) %>%
   summarise(
-    x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
+    x = 4,
     y = max(value) * 1.1
   )
 
@@ -241,7 +243,7 @@ p_stool_star <- p_to_stars(p_stool)
 
 simpson <- ggplot(df, aes(Location, value, fill = Type)) +
   geom_boxplot() +
-  geom_jitter(width = 0.2) +
+  geom_jitter(width = 0.2, size = 1) +
   facet_wrap(~Stadium, scales = "free_x") +
 
   # klamra dla Skin w każdym panelu
@@ -291,7 +293,8 @@ simpson <- ggplot(df, aes(Location, value, fill = Type)) +
 
 
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle("Simpson")
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle("Simpson") +
+  labs(x =NULL, y = NULL)
 
 simpson
 plots[[3]] <- simpson 
@@ -316,7 +319,6 @@ mother_placenta_pos <- df %>%
     x = which(loc_levels == "Mother placenta"),
     y = max(value) * 1.1
   )
-
 
 
 rectum_pos <- df %>%
@@ -349,7 +351,7 @@ p_mother_placenta_star <- p_to_stars(p_mother_placenta)
 
 observed <- ggplot(df, aes(Location, value, fill = Type)) +
   geom_boxplot() +
-  geom_jitter(width = 0.2) +
+  geom_jitter(width = 0.2, size = 1) +
   facet_wrap(~Stadium, scales = "free_x") +
 
   # klamra dla Skin w każdym panelu
@@ -398,29 +400,30 @@ observed <- ggplot(df, aes(Location, value, fill = Type)) +
  # klamra dla Mother placenta w każdym panelu
 
  geom_segment(
-    data = mother_placenta,
+    data = mother_placenta_pos,
     aes(x = x - 0.2, xend = x + 0.2, y = y, yend = y),
     inherit.aes = FALSE
   ) +
   geom_segment(
-    data = mother_placenta,
+    data = mother_placenta_pos,
     aes(x = x - 0.2, xend = x - 0.2, y = y * 0.98, yend = y),
     inherit.aes = FALSE
   ) +
   geom_segment(
-    data = mother_placenta,
+    data = mother_placenta_pos,
     aes(x = x + 0.2, xend = x + 0.2, y = y * 0.98, yend = y),
     inherit.aes = FALSE
   ) +
   geom_text(
-    data = mother_placenta,
+    data = mother_placenta_pos,
     aes(x = x, y = y * 1.05, label = p_mother_placenta_star),
     inherit.aes = FALSE
   ) +
 
 
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+ggtitle("Observed")
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+ggtitle("Observed") +
+  labs(x =NULL, y = NULL)
 
 observed
 
@@ -441,7 +444,7 @@ mother_placenta_pos <- df %>%
   filter(Location == "Mother placenta") %>%
   group_by(Stadium) %>%
   summarise(
-    x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
+    x =3,
     y = max(value) * 1.1
   )
 rectum_pos <- df %>%
@@ -483,7 +486,7 @@ p_mother_placenta_star <- p_to_stars(p_mother_placenta)
 
 fisher <- ggplot(df, aes(Location, value, fill = Type)) +
   geom_boxplot() +
-  geom_jitter(width = 0.2) +
+  geom_jitter(width = 0.2, size = 1) +
   facet_wrap(~Stadium, scales = "free_x") +
 
   # klamra dla Skin w każdym panelu
@@ -532,29 +535,30 @@ fisher <- ggplot(df, aes(Location, value, fill = Type)) +
  # klamra dla Mother placenta w każdym panelu
 
  geom_segment(
-    data = mother_placenta,
+    data = mother_placenta_pos,
     aes(x = x - 0.2, xend = x + 0.2, y = y, yend = y),
     inherit.aes = FALSE
   ) +
   geom_segment(
-    data = mother_placenta,
+    data = mother_placenta_pos,
     aes(x = x - 0.2, xend = x - 0.2, y = y * 0.98, yend = y),
     inherit.aes = FALSE
   ) +
   geom_segment(
-    data = mother_placenta,
+    data = mother_placenta_pos,
     aes(x = x + 0.2, xend = x + 0.2, y = y * 0.98, yend = y),
     inherit.aes = FALSE
   ) +
   geom_text(
-    data = mother_placenta,
+    data = mother_placenta_pos,
     aes(x = x, y = y * 1.05, label = p_mother_placenta_star),
     inherit.aes = FALSE
   ) +
 
 
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+ggtitle("Fisher")
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+ggtitle("Fisher") +
+  labs(x =NULL, y = NULL)
 
 fisher
 
@@ -617,7 +621,7 @@ df <- plot_richness(ps_genus, "Location", measures = "Fisher")$data
 
 ggplot(df, aes(Location, value, fill = Type)) +
   geom_boxplot() +
-  geom_jitter(width = 0.2) +
+  geom_jitter(width = 0.2, size = 1) +
   facet_wrap(~Stadium, scales = "free_x") +
   
   # globalny test Kruskala dla Location
