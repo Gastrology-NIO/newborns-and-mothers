@@ -5,10 +5,7 @@ library(ggsignif)
 
 
 plots <- list()
-comparisons <- list(
-  c("Cervix", "Cervix")
 
-)
 # shannon <- plot_richness(ps_genus, "Location", measures = c("Shannon"))
 # shannon + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1)) +
 #   geom_jitter(width = 0.15, alpha = 0.6) 
@@ -69,7 +66,7 @@ shannon <- ggplot(df, aes(Location, value, fill = Type)) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
-
+shannon
 plots[[1]] <- shannon 
 ### chao
 
@@ -195,7 +192,7 @@ chao1
 
 # chao <- plot_richness(ps_genus, "Location", measures = c("Chao1"))
 # chao + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
-plots[[2]] <- chao 
+plots[[2]] <- chao1
 
 
 #### simpson
@@ -544,6 +541,8 @@ plots[[5]] <- fisher
   ggsave(
       paste0(folder_out, "diversity.svg"),
       plot = p,
+    width = 12, height = 18,
+    limitsize  = FALSE
   )
 
 
