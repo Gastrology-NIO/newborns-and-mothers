@@ -60,8 +60,8 @@ PCoA <- function(ps_all, folder_out){
 PCoA_selected<- function(ps_all, save_path, type){
   pairs<- data.frame(loc1=c('Stool;Mother', 'Cervix;Mother', 'Cheek;Mother', 'Mother placenta;Mother'), loc2=c('Rectum;Newborn','Placenta;Newborn','Stomach;Newborn','Placenta;Newborn'))
   ps_genus<-tax_glom(ps_all, "genus")
-  ps_genus_type<-subset_samples(ps_genus, Type %in% c("B"))
-  type<-"B"
+  ps_genus_type<-subset_samples(ps_genus, Type %in% c("K"))
+  type<-"K"
 plots <- list()
   for (pair_no in 1:nrow(pairs)) {
 
@@ -70,7 +70,8 @@ plots <- list()
     pseq.compositional <- microbiome::transform(ps_tmp, "clr")
     ps.pcoa.a <- ordinate(pseq.compositional, method="PCoA", distance="euclidean")
     p <- plot_ordination(pseq.compositional, ps.pcoa.a, color = "mergedLocStad", label="Organism_id") + 
-    geom_point(size = 3)
+    geom_point(size = 3)+
+  stat_ellipse(type = "norm")
    plots[[pair_no]] <- p 
   }
   library(patchwork)
@@ -81,5 +82,7 @@ plots <- list()
   ggsave(
       paste0(folder_out,type, "_PCOA_clr_aitchison.svg"),
       plot = p,
+        width = 12, height = 6,
+
   )
 }
