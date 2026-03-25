@@ -1,19 +1,25 @@
-p <- plot_richness(ps_genus, "Location", measures = c("Shannon"))
-p + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
+plots <- list()
 
-p <- plot_richness(ps_genus, "Location", measures = c("Chao1"))
-p + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
+shannon <- plot_richness(ps_genus, "Location", measures = c("Shannon"))
+shannon + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
+plots[[1]] <- shannon 
 
-p <- plot_richness(ps_genus, "Location", measures = c("Simpson"))
-p + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
+chao <- plot_richness(ps_genus, "Location", measures = c("Chao1"))
+chao + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
+plots[[1]] <- chao 
+
+simpson <- plot_richness(ps_genus, "Location", measures = c("Simpson"))
+simpson + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
+plots[[1]] <- simpson 
+
+observed <- plot_richness(ps_genus, "Location", measures = c("Observed"))
+observed + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
+plots[[1]] <- observed 
 
 
-p <- plot_richness(ps_genus, "Location", measures = c("Observed"))
-p + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
-
-
-p <- plot_richness(ps_children_family, "Location", measures = c("Fisher"))
-p + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
+fisher <- plot_richness(ps_children_family, "Location", measures = c("Fisher"))
+fisher + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
+plots[[1]] <- fisher 
 
 
 
@@ -48,4 +54,13 @@ if (location!=location2){
   res_wil[nrow(res_wil) + 1,]<-c(location, location2, res_chao, res_shan, res_simpson, res_fisher, res_observed)
 }}}
 res_wil<-res_wil[c(2:nrow(res_wil)),]
-write.csv2(res_wil, paste0(folder_out, "tests_wilcoxon.csv"), row.names = F)
+
+
+  p<-wrap_plots(plots, ncol = 2) +
+    plot_annotation(tag_levels = "A")
+  
+  ggsave(
+      paste0(folder_out,type, "_PCOA_clr_aitchison.svg"),
+      plot = p,
+  )
+
