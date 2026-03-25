@@ -64,7 +64,7 @@ shannon <- ggplot(df, aes(Location, value, fill = Type)) +
   ) +
 
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle("Shannon")
 
 shannon
 plots[[1]] <- shannon 
@@ -74,6 +74,20 @@ plots[[1]] <- shannon
 df <- plot_richness(ps_genus, "Location", measures = "Chao1")$data
 
 # obliczamy pozycje x dla Skin osobno w każdym Stadium
+
+
+
+loc_levels <- levels(factor(df$Location))
+mother_placenta_pos <- df %>%
+  filter(Location == "Mother placenta") %>%
+  group_by(Stadium) %>%
+  summarise(
+    x = which(loc_levels == "Mother placenta"),
+    y = max(value) * 1.1
+  )
+
+
+
 rectum_pos <- df %>%
   filter(Location == "Rectum") %>%
   group_by(Stadium) %>%
@@ -90,13 +104,7 @@ placenta_pos <- df %>%
     y = max(value) * 1.1
   )
 
-mother_placenta_pos <- df %>%
-  filter(Location == "Mother placenta") %>%
-  group_by(Stadium) %>%
-  summarise(
-    x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
-    y = max(value) * 1.1
-  )
+
 
 # p-value dla Placenta, Rectum i Mother Placenta
 p_rectum <- wilcox.test(value ~ Type, data = df %>% filter(Location == "Rectum"))$p.value
@@ -182,7 +190,7 @@ chao1 <- ggplot(df, aes(Location, value, fill = Type)) +
 
 
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle("Chao1")
 
 chao1
 
@@ -202,6 +210,9 @@ plots[[2]] <- chao1
 df <- plot_richness(ps_genus, "Location", measures = "Simpson")$data
 
 # obliczamy pozycje x dla Skin osobno w każdym Stadium
+df$Location <- factor(df$Location, levels = unique(df$Location))
+
+
 skin_pos <- df %>%
   filter(Location == "Skin") %>%
   group_by(Stadium) %>%
@@ -217,6 +228,7 @@ stool_pos <- df %>%
     x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
     y = max(value) * 1.1
   )
+
 
 
 # p-value dla Placenta, Rectum i Mother Placenta
@@ -279,7 +291,7 @@ simpson <- ggplot(df, aes(Location, value, fill = Type)) +
 
 
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle("Simpson")
 
 simpson
 plots[[3]] <- simpson 
@@ -295,13 +307,17 @@ plots[[3]] <- simpson
 df <- plot_richness(ps_genus, "Location", measures = "Observed")$data
 
 # obliczamy pozycje x dla Skin osobno w każdym Stadium
-placenta_pos <- df %>%
-  filter(Location == "Placenta") %>%
+
+loc_levels <- levels(factor(df$Location))
+mother_placenta_pos <- df %>%
+  filter(Location == "Mother placenta") %>%
   group_by(Stadium) %>%
   summarise(
-    x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
+    x = which(loc_levels == "Mother placenta"),
     y = max(value) * 1.1
   )
+
+
 
 rectum_pos <- df %>%
   filter(Location == "Rectum") %>%
@@ -311,13 +327,14 @@ rectum_pos <- df %>%
     y = max(value) * 1.1
   )
 
-mother_placenta <- df %>%
-  filter(Location == "Mother placenta") %>%
+placenta_pos <- df %>%
+  filter(Location == "Placenta") %>%
   group_by(Stadium) %>%
   summarise(
     x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
     y = max(value) * 1.1
   )
+
 
 # p-value dla Placenta, Rectum i Mother Placenta
 p_placenta <- wilcox.test(value ~ Type, data = df %>% filter(Location == "Placenta"))$p.value
@@ -403,7 +420,7 @@ observed <- ggplot(df, aes(Location, value, fill = Type)) +
 
 
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+ggtitle("Observed")
 
 observed
 
@@ -418,14 +435,15 @@ plots[[4]] <- observed
 df <- plot_richness(ps_genus, "Location", measures = "Fisher")$data
 
 # obliczamy pozycje x dla Skin osobno w każdym Stadium
-placenta_pos <- df %>%
-  filter(Location == "Placenta") %>%
+
+
+mother_placenta_pos <- df %>%
+  filter(Location == "Mother placenta") %>%
   group_by(Stadium) %>%
   summarise(
     x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
     y = max(value) * 1.1
   )
-
 rectum_pos <- df %>%
   filter(Location == "Rectum") %>%
   group_by(Stadium) %>%
@@ -434,13 +452,23 @@ rectum_pos <- df %>%
     y = max(value) * 1.1
   )
 
-mother_placenta <- df %>%
-  filter(Location == "Mother placenta") %>%
+placenta_pos <- df %>%
+  filter(Location == "Placenta") %>%
   group_by(Stadium) %>%
   summarise(
     x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
     y = max(value) * 1.1
   )
+
+loc_levels <- levels(factor(df$Location))
+mother_placenta_pos <- df %>%
+  filter(Location == "Mother placenta") %>%
+  group_by(Stadium) %>%
+  summarise(
+    x = which(loc_levels == "Mother placenta"),
+    y = max(value) * 1.1
+  )
+
 
 # p-value dla Placenta, Rectum i Mother Placenta
 p_placenta <- wilcox.test(value ~ Type, data = df %>% filter(Location == "Placenta"))$p.value
@@ -526,7 +554,7 @@ fisher <- ggplot(df, aes(Location, value, fill = Type)) +
 
 
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+ggtitle("Fisher")
 
 fisher
 
