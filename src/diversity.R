@@ -12,7 +12,6 @@ plots <- list()
 
 library(dplyr)
 
-df <- plot_richness(ps_genus, "Location", measures = "Shannon")$data
 
 # funkcja zamieniająca p-value na gwiazdki
 p_to_stars <- function(p) {
@@ -23,52 +22,98 @@ p_to_stars <- function(p) {
   return("ns")
 }
 
-# obliczamy pozycje x dla Skin osobno w każdym Stadium
-skin_pos <- df %>%
-  filter(Location == "Skin") %>%
-  group_by(Stadium) %>%
-  summarise(
-    x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
-    y = max(value) * 1.1
-  )
 
-# p-value dla Skin
-p_skin <- wilcox.test(value ~ Type, data = df %>% filter(Location == "Skin"))$p.value
-p_skin_star <- p_to_stars(p_skin)
+position <- function(df, location_name, all_loc){ 
+  # obliczamy pozycje x dla Skin osobno w każdym Stadium
+  for (i in 1:length(all_loc)){
+    if (all_loc[i]==location_name){
+        pos <- df %>%
+          filter(Location == location_name) %>%
+          group_by(Stadium) %>%
+          summarise(
+            x = 3,
+            y = max(value) * 1.1
+          )
+        return(pos)
+      }
+    }
+}
 
-shannon <- ggplot(df, aes(Location, value, fill = Type)) +
-  geom_boxplot() +
-  geom_jitter(width = 0.2, size = 1) +
-  facet_wrap(~Stadium, scales = "free_x") +
 
-  # klamra dla Skin w każdym panelu
-  geom_segment(
-    data = skin_pos,
+add_clamr <- function(plot, pos, label_star){
+   plot<-plot+ geom_segment(
+    data = pos,
     aes(x = x - 0.2, xend = x + 0.2, y = y, yend = y),
     inherit.aes = FALSE
   ) +
   geom_segment(
-    data = skin_pos,
+    data = pos,
     aes(x = x - 0.2, xend = x - 0.2, y = y * 0.98, yend = y),
     inherit.aes = FALSE
   ) +
   geom_segment(
-    data = skin_pos,
+    data = pos,
     aes(x = x + 0.2, xend = x + 0.2, y = y * 0.98, yend = y),
     inherit.aes = FALSE
   ) +
   geom_text(
-    data = skin_pos,
-    aes(x = x, y = y * 1.05, label = p_skin_star),
+    data = pos,
+    aes(x = x, y = y * 1.05, label = label_star),
     inherit.aes = FALSE
-  ) +
+  ) 
+  print(label_star)
+  return(plot)
+}
 
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle("Shannon") +
-  labs(x =NULL, y = NULL)
 
-shannon
-plots[[1]] <- shannon 
+
+plot_richness_with_p_val<-function(ps_genus, measure)
+    df <- plot_richness(ps_genus, "Location", measures = "Shannon")$data
+    mother<-df %>%
+        filter(Stadium== "Mother") 
+    mother_loc<-sort(unique(mother$Location))
+    
+    
+    newborn<-df %>%
+        filter(Stadium== "Newborn") 
+    newborn_loc<-sort(unique(newborn$Location))
+    
+    shannon <- ggplot(df, aes(Location, value, fill = Type)) +
+      geom_boxplot() +
+      geom_jitter(width = 0.2, size = 1) +
+      facet_wrap(~Stadium, scales = "free_x") +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle(measure) +
+      labs(x =NULL, y = NULL)
+    
+    for (location_name in mother_loc){
+      position_loc <- position(df, location_name, mother_loc)
+      p_value <- wilcox.test(value ~ Type, data = df %>% filter(Location == location_name))$p.value
+      p_value_star <- p_to_stars(p_value)
+      if (p_value_star!="ns"){
+            print(p_value_star)
+    
+      shannon <- add_clamr(shannon, position_loc, p_value_star)
+        }
+    }
+    
+    for (location_name in newborn_loc){
+      position_loc <- position(df, location_name, newborn_loc)
+      p_value <- wilcox.test(value ~ Type, data = df %>% filter(Location == location_name))$p.value
+      p_value_star <- p_to_stars(p_value)
+      if (p_value_star!="ns"){
+        print(location_name)
+        print(p_value_star)
+        
+        shannon <- add_clamr(shannon, position_loc, p_value_star)
+        }
+    }
+    return(shannon)
+}
+
+shannon<-plot_richness_with_p_val(ps_genus, "Shannon")
+    plots[[1]] <- shannon 
+
 ### chao
 
 
