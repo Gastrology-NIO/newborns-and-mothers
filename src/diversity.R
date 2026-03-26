@@ -1,7 +1,7 @@
 
 library(tidyverse)
 library(ggsignif)
-
+library(patchwork)
 
 
 plots <- list()
@@ -84,7 +84,9 @@ plot_richness_with_p_val<-function(ps_genus, measure){
       facet_wrap(~Stadium, scales = "free_x") +
       theme_bw() +
       theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle(measure) +
-      labs(x =NULL, y = NULL)
+      labs(x =NULL, y = NULL)+
+      scale_fill_manual(values = c("B" = "#e73785ff",
+                               "K" = "#2db62bff"))
     
     for (location_name in mother_loc){
       position_loc <- position(df, location_name, mother_loc)
@@ -117,7 +119,7 @@ plot_richness_with_p_val<-function(ps_genus, measure){
 # e737e3ff + 2db62bff
 # e73785ff
 
-było f8766dff 00bfc4ff
+# było f8766dff 00bfc4ff
 shannon<-plot_richness_with_p_val(ps_genus, "Shannon")
 shannon
 plots[[1]] <- shannon 
