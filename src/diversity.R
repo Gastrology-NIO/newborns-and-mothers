@@ -152,6 +152,116 @@ plots[[5]] <- fisher
     limitsize  = FALSE
   )
 
+add_comparision<-function(comparision, p, tmp){
+  p<-p+  stat_compare_means(
+    comparisons = comparisons,
+    method = "wilcox.test",
+    label = "p.signif",
+    data = tmp
+  ) 
+  return(p)
+}
+
+
+
+
+
+add_clamr_long <- function(plot, x1, x2, y, label_star) {
+
+  pos <- data.frame(x1 = x1, x2 = x2, y = y, label = label_star)
+
+  plot <- plot +
+    # pozioma linia klamry
+    geom_segment(
+      data = pos,
+      aes(x = x1, xend = x2, y = y, yend = y),
+      inherit.aes = FALSE
+    ) +
+    # lewa pionowa kreska
+    geom_segment(
+      data = pos,
+      aes(x = x1, xend = x1, y = y, yend = y * 0.98),
+      inherit.aes = FALSE
+    ) +
+    # prawa pionowa kreska
+    geom_segment(
+      data = pos,
+      aes(x = x2, xend = x2, y = y, yend = y * 0.98),
+      inherit.aes = FALSE
+    ) +
+    # etykieta nad klamrą
+    geom_text(
+      data = pos,
+      aes(x = (x1 + x2) / 2, y = y * 1.05, label = label),
+      inherit.aes = FALSE
+    )
+
+  return(plot)
+}
+
+
+measure<-"Fisher"
+
+pairs<- c('Stool;Mother',  'Cheek;Mother', 'Mother placenta;Mother','Rectum;Newborn', 'Cervix;Mother','Placenta;Newborn','Stomach;Newborn','Placenta;Newborn')
+pairs_loc<- data.frame(loc1=c('Stool', 'Cervix', 'Cheek', 'Mother placenta'), loc2=c('Rectum','Placenta','Stomach','Placenta'))
+sample_data(ps_genus)$mergedLocStad<-mapply(paste0, sample_data(ps_genus)$Location,";", sample_data(ps_genus)$Stadium)
+df <- plot_richness(ps_genus, "Location", measures = measure)$data
+type<-"B"
+tmp<-df[df$mergedLocStad %in% pairs,]
+tmp<-tmp[tmp$Type == type,]
+order_box<-c('Stool', 'Rectum', 'Cheek','Stomach', 'Mother placenta', 'Placenta', 'Cervix')
+
+tmp$Location <- factor(tmp$Location,
+                       levels = order_box)
+
+p<-ggplot(tmp, aes(Location, value, fill=Type)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.2) +
+  
+  # globalny test Kruskala dla Location
+  stat_compare_means(
+    aes(group = 1),   # ważne: ignoruje Type
+    method = "kruskal.test",
+    label = "p.format"
+  ) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + scale_fill_manual(values = c("B" = "#e73785ff","K" = "#2db62bff"))+ggtitle(measure) +
+      labs(x =NULL, y = NULL)+ theme(legend.position="none")
+  p
+for (pair_no in 1:nrow(pairs_loc)) {
+  x1<-0
+  x2<-0
+  for (i in 1:length(order_box)){
+    if (order_box[i]==pairs_loc$loc1[pair_no]){
+      x1<-i
+    }
+        if (order_box[i]==pairs_loc$loc2[pair_no]){
+      x2<-i
+    }
+  }
+  if (x2<x1){
+    x1_tmp<-x2
+    x2_tmp<-x1
+    x1<-x1_tmp
+    x2<-x2_tmp
+  }
+  print(x1)
+  print(x2)
+  comparisons <- combn(c(pairs_loc$loc1[pair_no], pairs_loc$loc2[pair_no]), 2, simplify = FALSE)
+  p_value <- wilcox.test(value ~ Location, data = df %>% filter(Location %in% c(pairs_loc[pair_no,])))$p.value
+  p_value_star <- p_to_stars(p_value)
+  tmp2<-df[df$Location %in% pairs_loc[pair_no,],]
+  p<-add_clamr_long(  plot = p,
+      x1 = x1,      # pozycja A
+      x2 = x2,      # pozycja C
+      y = max(tmp2$value) * 1.1,
+      label_star = p_value_star)
+  }
+
+
+
+
+
 
 
 
