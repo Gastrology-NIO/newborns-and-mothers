@@ -71,7 +71,11 @@ plots <- list()
     ps.pcoa.a <- ordinate(pseq.compositional, method="PCoA", distance="euclidean")
     p <- plot_ordination(pseq.compositional, ps.pcoa.a, color = "mergedLocStad", label="Organism_id") + 
     geom_point(size = 3)+
-  stat_ellipse(type = "norm")
+  stat_ellipse(type = "norm")+
+  scale_color_manual(values = c("#e73785ff", "#2db62bff"))
+
+
+    
    plots[[pair_no]] <- p 
   }
   library(patchwork)
