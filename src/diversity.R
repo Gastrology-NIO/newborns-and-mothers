@@ -4,7 +4,6 @@ library(ggsignif)
 library(patchwork)
 
 
-plots <- list()
 
 # shannon <- plot_richness(ps_genus, "Location", measures = c("Shannon"))
 # shannon + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1)) +
@@ -119,6 +118,7 @@ plot_richness_with_p_val<-function(ps_genus, measure){
 
 # e737e3ff + 2db62bff
 # e73785ff
+plots <- list()
 
 # było f8766dff 00bfc4ff
 shannon<-plot_richness_with_p_val(ps_genus, "Shannon")
@@ -200,13 +200,11 @@ add_clamr_long <- function(plot, x1, x2, y, label_star) {
 }
 
 
-measure<-"Fisher"
-
+plot_richness_with_p_val_by_pairs<-function(ps_genus, measure, type){
 pairs<- c('Stool;Mother',  'Cheek;Mother', 'Mother placenta;Mother','Rectum;Newborn', 'Cervix;Mother','Placenta;Newborn','Stomach;Newborn','Placenta;Newborn')
 pairs_loc<- data.frame(loc1=c('Stool', 'Cervix', 'Cheek', 'Mother placenta'), loc2=c('Rectum','Placenta','Stomach','Placenta'))
 sample_data(ps_genus)$mergedLocStad<-mapply(paste0, sample_data(ps_genus)$Location,";", sample_data(ps_genus)$Stadium)
 df <- plot_richness(ps_genus, "Location", measures = measure)$data
-type<-"B"
 tmp<-df[df$mergedLocStad %in% pairs,]
 tmp<-tmp[tmp$Type == type,]
 order_box<-c('Stool', 'Rectum', 'Cheek','Stomach', 'Mother placenta', 'Placenta', 'Cervix')
@@ -216,7 +214,7 @@ tmp$Location <- factor(tmp$Location,
 
 p<-ggplot(tmp, aes(Location, value, fill=Type)) +
   geom_boxplot() +
-  geom_jitter(width = 0.2) +
+  geom_jitter(width = 0.2, , size = 1) +
   
   # globalny test Kruskala dla Location
   stat_compare_means(
@@ -257,11 +255,82 @@ for (pair_no in 1:nrow(pairs_loc)) {
       y = max(tmp2$value) * 1.1,
       label_star = p_value_star)
   }
+  return(p)
+}
+
+
+plots <- list()
+type<-"B"
+
+# było f8766dff 00bfc4ff
+shannon<-plot_richness_with_p_val_by_pairs(ps_genus, "Shannon", type)
+shannon
+plots[[1]] <- shannon 
+
+chao1<-plot_richness_with_p_val_by_pairs(ps_genus, "Chao1", type)
+chao1
+plots[[2]] <- chao1
+
+simpson<-plot_richness_with_p_val_by_pairs(ps_genus, "Simpson", type)
+simpson
+plots[[3]] <- simpson 
+
+observed<-plot_richness_with_p_val_by_pairs(ps_genus, "Observed", type)
+observed
+plots[[4]] <- observed 
+
+fisher<-plot_richness_with_p_val_by_pairs(ps_genus, "Fisher", type)
+fisher
+plots[[5]] <- fisher 
 
 
 
+  p<-wrap_plots(plots, ncol = 2) +
+    plot_annotation(tag_levels = "A")
+  
+  ggsave(
+      paste0(folder_out, type,"_by_pairs_diversity.svg"),
+      plot = p,
+    width = 8, height = 12,
+    limitsize  = FALSE
+  )
 
 
+plots <- list()
+type<-"K"
+
+# było f8766dff 00bfc4ff
+shannon<-plot_richness_with_p_val_by_pairs(ps_genus, "Shannon", type)
+shannon
+plots[[1]] <- shannon 
+
+chao1<-plot_richness_with_p_val_by_pairs(ps_genus, "Chao1", type)
+chao1
+plots[[2]] <- chao1
+
+simpson<-plot_richness_with_p_val_by_pairs(ps_genus, "Simpson", type)
+simpson
+plots[[3]] <- simpson 
+
+observed<-plot_richness_with_p_val_by_pairs(ps_genus, "Observed", type)
+observed
+plots[[4]] <- observed 
+
+fisher<-plot_richness_with_p_val_by_pairs(ps_genus, "Fisher", type)
+fisher
+plots[[5]] <- fisher 
+
+
+
+  p<-wrap_plots(plots, ncol = 2) +
+    plot_annotation(tag_levels = "A")
+  
+  ggsave(
+      paste0(folder_out, type,"_by_pairs_diversity.svg"),
+      plot = p,
+    width = 8, height = 12,
+    limitsize  = FALSE
+  )
 
 
 
