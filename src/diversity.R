@@ -96,6 +96,7 @@ plot_richness_with_p_val<-function(ps_genus, measure){
       if (p_value_star!="ns"){
           print("mother")
           print(location_name)
+        print(p_value)
           print(p_value_star)    
           plot <- add_clamr(plot, position_loc, p_value_star)
         }
