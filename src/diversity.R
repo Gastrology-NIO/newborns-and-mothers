@@ -31,7 +31,7 @@ position <- function(df, location_name, all_loc){
           filter(Location == location_name) %>%
           group_by(Stadium) %>%
           summarise(
-            x = 3,
+            x = i,
             y = max(value) * 1.1
           )
         return(pos)
@@ -67,8 +67,8 @@ add_clamr <- function(plot, pos, label_star){
 
 
 
-plot_richness_with_p_val<-function(ps_genus, measure)
-    df <- plot_richness(ps_genus, "Location", measures = "Shannon")$data
+plot_richness_with_p_val<-function(ps_genus, measure){
+    df <- plot_richness(ps_genus, "Location", measures = measure)$data
     mother<-df %>%
         filter(Stadium== "Mother") 
     mother_loc<-sort(unique(mother$Location))
@@ -78,7 +78,7 @@ plot_richness_with_p_val<-function(ps_genus, measure)
         filter(Stadium== "Newborn") 
     newborn_loc<-sort(unique(newborn$Location))
     
-    shannon <- ggplot(df, aes(Location, value, fill = Type)) +
+    plot <- ggplot(df, aes(Location, value, fill = Type)) +
       geom_boxplot() +
       geom_jitter(width = 0.2, size = 1) +
       facet_wrap(~Stadium, scales = "free_x") +
@@ -90,10 +90,12 @@ plot_richness_with_p_val<-function(ps_genus, measure)
       position_loc <- position(df, location_name, mother_loc)
       p_value <- wilcox.test(value ~ Type, data = df %>% filter(Location == location_name))$p.value
       p_value_star <- p_to_stars(p_value)
+
       if (p_value_star!="ns"){
-            print(p_value_star)
-    
-      shannon <- add_clamr(shannon, position_loc, p_value_star)
+          print("mother")
+          print(location_name)
+          print(p_value_star)    
+          plot <- add_clamr(plot, position_loc, p_value_star)
         }
     }
     
@@ -102,380 +104,39 @@ plot_richness_with_p_val<-function(ps_genus, measure)
       p_value <- wilcox.test(value ~ Type, data = df %>% filter(Location == location_name))$p.value
       p_value_star <- p_to_stars(p_value)
       if (p_value_star!="ns"){
+        print("newborn")
         print(location_name)
         print(p_value_star)
         
-        shannon <- add_clamr(shannon, position_loc, p_value_star)
+        plot <- add_clamr(plot, position_loc, p_value_star)
         }
     }
-    return(shannon)
+    return(plot)
 }
 
+# e737e3ff + 2db62bff
+# e73785ff
+
+było f8766dff 00bfc4ff
 shannon<-plot_richness_with_p_val(ps_genus, "Shannon")
-    plots[[1]] <- shannon 
+shannon
+plots[[1]] <- shannon 
 
-### chao
-
-
-df <- plot_richness(ps_genus, "Location", measures = "Chao1")$data
-
-# obliczamy pozycje x dla Skin osobno w każdym Stadium
-
-
-
-loc_levels <- levels(factor(df$Location))
-mother_placenta_pos <- df %>%
-  filter(Location == "Mother placenta") %>%
-  group_by(Stadium) %>%
-  summarise(
-    x = which(loc_levels == "Mother placenta"),
-    y = max(value) * 1.1
-  )
-
-
-
-rectum_pos <- df %>%
-  filter(Location == "Rectum") %>%
-  group_by(Stadium) %>%
-  summarise(
-    x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
-    y = max(value) * 1.1
-  )
-
-placenta_pos <- df %>%
-  filter(Location == "Placenta") %>%
-  group_by(Stadium) %>%
-  summarise(
-    x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
-    y = max(value) * 1.1
-  )
-
-
-
-# p-value dla Placenta, Rectum i Mother Placenta
-p_rectum <- wilcox.test(value ~ Type, data = df %>% filter(Location == "Rectum"))$p.value
-p_rectum_star <- p_to_stars(p_rectum)
-
-p_placenta <- wilcox.test(value ~ Type, data = df %>% filter(Location == "Placenta"))$p.value
-p_placenta_star <- p_to_stars(p_placenta)
-
-p_mother_placenta <- wilcox.test(value ~ Type, data = df %>% filter(Location == "Mother placenta"))$p.value
-p_mother_placenta_star <- p_to_stars(p_mother_placenta)
-
-chao1 <- ggplot(df, aes(Location, value, fill = Type)) +
-  geom_boxplot() +
-  geom_jitter(width = 0.2, size = 1) +
-  facet_wrap(~Stadium, scales = "free_x") +
-
-  # klamra dla Skin w każdym panelu
-  geom_segment(
-    data = rectum_pos,
-    aes(x = x - 0.2, xend = x + 0.2, y = y, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = rectum_pos,
-    aes(x = x - 0.2, xend = x - 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = rectum_pos,
-    aes(x = x + 0.2, xend = x + 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_text(
-    data = rectum_pos,
-    aes(x = x, y = y * 1.05, label = p_placenta_star),
-    inherit.aes = FALSE
-  ) +
-  # klamra dla Placenta w każdym panelu
-
- geom_segment(
-    data = placenta_pos,
-    aes(x = x - 0.2, xend = x + 0.2, y = y, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = placenta_pos,
-    aes(x = x - 0.2, xend = x - 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = placenta_pos,
-    aes(x = x + 0.2, xend = x + 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_text(
-    data = placenta_pos,
-    aes(x = x, y = y * 1.05, label = p_placenta_star),
-    inherit.aes = FALSE
-  ) +
-
-# klamra dla mother Placenta w każdym panelu
-
- geom_segment(
-    data = mother_placenta_pos,
-    aes(x = x - 0.2, xend = x + 0.2, y = y, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = mother_placenta_pos,
-    aes(x = x - 0.2, xend = x - 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = mother_placenta_pos,
-    aes(x = x + 0.2, xend = x + 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_text(
-    data = mother_placenta_pos,
-    aes(x = x, y = y * 1.05, label = p_mother_placenta_star),
-    inherit.aes = FALSE
-  ) +
-
-
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle("Chao1") +
-  labs(x =NULL, y = NULL)
-
+chao1<-plot_richness_with_p_val(ps_genus, "Chao1")
 chao1
-
-
-#####
-
-
-# chao <- plot_richness(ps_genus, "Location", measures = c("Chao1"))
-# chao + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
 plots[[2]] <- chao1
 
-
-#### simpson
-
-
-
-df <- plot_richness(ps_genus, "Location", measures = "Simpson")$data
-
-# obliczamy pozycje x dla Skin osobno w każdym Stadium
-df$Location <- factor(df$Location, levels = sort(unique(df$Location)))
-
-skin_pos <- df %>%
-  filter(Location == "Skin") %>%
-  group_by(Stadium) %>%
-  summarise(
-    x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
-    y = max(value) * 1.1
-  )
-
-#toto: fix x, aby był automatycznie wybierany
-stool_pos <- df %>%
-  filter(Location == "Stool") %>%
-  group_by(Stadium) %>%
-  summarise(
-    x = 4,
-    y = max(value) * 1.1
-  )
-
-
-
-# p-value dla Placenta, Rectum i Mother Placenta
-p_skin <- wilcox.test(value ~ Type, data = df %>% filter(Location == "Skin"))$p.value
-p_skin_star <- p_to_stars(p_skin)
-
-p_stool <- wilcox.test(value ~ Type, data = df %>% filter(Location == "Stool"))$p.value
-p_stool_star <- p_to_stars(p_stool)
-
-
-simpson <- ggplot(df, aes(Location, value, fill = Type)) +
-  geom_boxplot() +
-  geom_jitter(width = 0.2, size = 1) +
-  facet_wrap(~Stadium, scales = "free_x") +
-
-  # klamra dla Skin w każdym panelu
-  geom_segment(
-    data = skin_pos,
-    aes(x = x - 0.2, xend = x + 0.2, y = y, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = skin_pos,
-    aes(x = x - 0.2, xend = x - 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = skin_pos,
-    aes(x = x + 0.2, xend = x + 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_text(
-    data = skin_pos,
-    aes(x = x, y = y * 1.05, label = p_skin_star),
-    inherit.aes = FALSE
-  ) +
-  # klamra dla Placenta w każdym panelu
-
- geom_segment(
-    data = stool_pos,
-    aes(x = x - 0.2, xend = x + 0.2, y = y, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = stool_pos,
-    aes(x = x - 0.2, xend = x - 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = stool_pos,
-    aes(x = x + 0.2, xend = x + 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_text(
-    data = stool_pos,
-    aes(x = x, y = y * 1.05, label = p_stool_star),
-    inherit.aes = FALSE
-  ) +
-
-
-
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle("Simpson") +
-  labs(x =NULL, y = NULL)
-
+simpson<-plot_richness_with_p_val(ps_genus, "Simpson")
 simpson
 plots[[3]] <- simpson 
-###
 
-# simpson <- plot_richness(ps_genus, "Location", measures = c("Simpson"))
-# simpson + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
-# plots[[3]] <- simpson 
-
-
-##### observed
-
-df <- plot_richness(ps_genus, "Location", measures = "Observed")$data
-
-# obliczamy pozycje x dla Skin osobno w każdym Stadium
-
-loc_levels <- levels(factor(df$Location))
-mother_placenta_pos <- df %>%
-  filter(Location == "Mother placenta") %>%
-  group_by(Stadium) %>%
-  summarise(
-    x = which(loc_levels == "Mother placenta"),
-    y = max(value) * 1.1
-  )
-
-
-rectum_pos <- df %>%
-  filter(Location == "Rectum") %>%
-  group_by(Stadium) %>%
-  summarise(
-    x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
-    y = max(value) * 1.1
-  )
-
-placenta_pos <- df %>%
-  filter(Location == "Placenta") %>%
-  group_by(Stadium) %>%
-  summarise(
-    x = as.numeric(factor(Location, levels = unique(df$Location[df$Stadium == Stadium]))),
-    y = max(value) * 1.1
-  )
-
-
-# p-value dla Placenta, Rectum i Mother Placenta
-p_placenta <- wilcox.test(value ~ Type, data = df %>% filter(Location == "Placenta"))$p.value
-p_placenta_star <- p_to_stars(p_placenta)
-
-p_rectum <- wilcox.test(value ~ Type, data = df %>% filter(Location == "Rectum"))$p.value
-p_rectum_star <- p_to_stars(p_rectum)
-
-
-p_mother_placenta <- wilcox.test(value ~ Type, data = df %>% filter(Location == "Mother placenta"))$p.value
-p_mother_placenta_star <- p_to_stars(p_mother_placenta)
-
-observed <- ggplot(df, aes(Location, value, fill = Type)) +
-  geom_boxplot() +
-  geom_jitter(width = 0.2, size = 1) +
-  facet_wrap(~Stadium, scales = "free_x") +
-
-  # klamra dla Skin w każdym panelu
-  geom_segment(
-    data = placenta_pos,
-    aes(x = x - 0.2, xend = x + 0.2, y = y, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = placenta_pos,
-    aes(x = x - 0.2, xend = x - 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = placenta_pos,
-    aes(x = x + 0.2, xend = x + 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_text(
-    data = placenta_pos,
-    aes(x = x, y = y * 1.05, label = p_placenta_star),
-    inherit.aes = FALSE
-  ) +
-  # klamra dla Placenta w każdym panelu
-
- geom_segment(
-    data = rectum_pos,
-    aes(x = x - 0.2, xend = x + 0.2, y = y, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = rectum_pos,
-    aes(x = x - 0.2, xend = x - 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = rectum_pos,
-    aes(x = x + 0.2, xend = x + 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_text(
-    data = rectum_pos,
-    aes(x = x, y = y * 1.05, label = p_rectum_star),
-    inherit.aes = FALSE
-  ) +
- # klamra dla Mother placenta w każdym panelu
-
- geom_segment(
-    data = mother_placenta_pos,
-    aes(x = x - 0.2, xend = x + 0.2, y = y, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = mother_placenta_pos,
-    aes(x = x - 0.2, xend = x - 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_segment(
-    data = mother_placenta_pos,
-    aes(x = x + 0.2, xend = x + 0.2, y = y * 0.98, yend = y),
-    inherit.aes = FALSE
-  ) +
-  geom_text(
-    data = mother_placenta_pos,
-    aes(x = x, y = y * 1.05, label = p_mother_placenta_star),
-    inherit.aes = FALSE
-  ) +
-
-
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+ggtitle("Observed") +
-  labs(x =NULL, y = NULL)
-
+observed<-plot_richness_with_p_val(ps_genus, "Observed")
 observed
-
-
-# observed <- plot_richness(ps_genus, "Location", measures = c("Observed"))
-# observed + theme_bw() + geom_boxplot(aes(fill = Type)) +facet_wrap(~Stadium, scales="free_x")+ theme(axis.text.x = element_text(angle=90, hjust=1))
 plots[[4]] <- observed 
+
+fisher<-plot_richness_with_p_val(ps_genus, "Fisher")
+fisher
+plots[[4]] <- fisher 
 
 ### Fisher
 
