@@ -128,3 +128,64 @@ plots <- list()
 
   )
 }
+
+
+
+PCoA_selected_v1<- function(ps_all, save_path, type){
+  ps_genus<-tax_glom(ps_all, "genus")
+  pairs<- c('Cervix;Mother','Cheek;Mother','Mother placenta;Mother','Stool;Mother', 'Placenta;Neonate','Rectum;Neonate','Skin;Neonate','Stomach;Neonate')
+
+  sample_data(ps_genus)$location_type<-paste0(sample_data(ps_genus)$Location, ";", sample_data(ps_genus)$Stadium,";", sample_data(ps_genus)$Type)
+  physeq_clr <- microbiome::transform(ps_genus, "clr")
+  ps_dist_matrix <- phyloseq::distance(physeq_clr, method ="euclidean")
+  control_adonis<-pairwise.adonis(ps_dist_matrix, phyloseq::sample_data(ps_genus)$location_type, p.adjust.m="BH")
+  
+  # ps_genus_type<-subset_samples(ps_genus, Type %in% c("TP"))
+  # type<-"TP"
+  #   ps_genus_type<-subset_samples(ps_genus, Type %in% c("LP"))
+  # type<-"LP"
+     sample_data(ps_genus)$mergedLocStad<-mapply(paste0, sample_data(ps_genus)$Location,";", sample_data(ps_genus)$Stadium) 
+type1<-"TP"
+type2<-"LP"
+  
+plots <- list()
+  for (pair_no in 1:length(pairs)) {
+
+    ps_tmp<-subset_samples(ps_genus, mergedLocStad == pairs[pair_no])
+    pseq.compositional <- microbiome::transform(ps_tmp, "clr")
+    ad_res <- control_adonis[control_adonis$pair  %in% c(paste(paste0(pairs[pair_no], ";",type1),"vs" ,paste0(pairs[pair_no], ";",type2)), paste(paste0(pairs[pair_no], ";",type2),"vs" ,paste0(pairs[pair_no], ";",type1))), ]
+    ad_label <- paste0(
+        "R² = ", round(ad_res$R2, 3), "\n",
+        "p = ", signif(ad_res$p.adjusted, 3)
+    )
+    ps.pcoa.a <- ordinate(pseq.compositional, method="PCoA", distance="euclidean")
+    p <- plot_ordination(pseq.compositional, ps.pcoa.a, color = "Type", label="Organism_id") + 
+    geom_point(size = 3)+
+  stat_ellipse(type = "norm")+
+  scale_color_manual(values = c("#e73785ff", "#2db62bff"))+ggtitle(pairs[pair_no])
+          p<-p+annotation_custom(
+    grob = textGrob(
+      ad_label,
+      x = unit(0.02, "npc"),   # lewy margines
+      y = unit(0.98, "npc"),   # górny margines
+      hjust = 0, vjust = 1,
+      gp = gpar(col = "black", fontsize = 10)
+    )
+  ) +
+  coord_cartesian(clip = "off")    
+   plots[[pair_no]] <- p 
+    print(pair_no)
+  }
+  library(patchwork)
+
+  p<-wrap_plots(plots, ncol = 2) +
+    plot_annotation(tag_levels = "A")
+  
+  ggsave(
+      paste0(folder_out,type, "_PCOA_clr_aitchison_1.svg"),
+      plot = p,
+        width = 12, height =12,
+
+  )
+}
+
