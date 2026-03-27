@@ -66,8 +66,10 @@ PCoA_selected<- function(ps_all, save_path, type){
   ps_dist_matrix <- phyloseq::distance(physeq_clr, method ="euclidean")
   control_adonis<-pairwise.adonis(ps_dist_matrix, phyloseq::sample_data(ps_genus)$location_type, p.adjust.m="BH")
   
-  ps_genus_type<-subset_samples(ps_genus, Type %in% c("K"))
-  type<-"B"
+  ps_genus_type<-subset_samples(ps_genus, Type %in% c("TP"))
+  type<-"TP"
+  #   ps_genus_type<-subset_samples(ps_genus, Type %in% c("LP"))
+  # type<-"LP"
 plots <- list()
   for (pair_no in 1:nrow(pairs)) {
 
@@ -85,7 +87,7 @@ plots <- list()
   stat_ellipse(type = "norm")+
   scale_color_manual(values = c("#e73785ff", "#2db62bff"))
 
-    if ((paste0(pairs$loc1[pair_no], ";",type) == "Cheek;Mother;K") & (paste0(pairs$loc1[pair_no], ";",type) == "Stomach;Newborn;K")){
+    if ((paste0(pairs$loc1[pair_no], ";",type) == "Cheek;Mother;TP") & (paste0(pairs$loc1[pair_no], ";",type) == "Stomach;Newborn;TP")){
         p <- p +
   annotation_custom(
     grob = textGrob(
