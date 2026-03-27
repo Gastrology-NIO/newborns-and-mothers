@@ -121,7 +121,8 @@ ps_all <- subset_samples(ps2, Stadium %in% c("_noworodek_1", '_noworodek', "_mat
 sample_data(ps_all)$Stadium[sample_data(ps_all)$Stadium %in% c("_dziecko_2", "_noworodek_1", "_noworodek")]<-"Newborn"
 sample_data(ps_all)$Stadium[sample_data(ps_all)$Stadium %in% c("_matka", "_matka_1", "_matka_2")]<-"Mother"
 sample_data(ps_all)$Type<-sapply(strsplit(sample_data(ps_all)$Organism_id, "_"), `[`, c(2))
+sample_data(ps_all)$Type[sample_data(ps_all)$Type=="K"]<-"TP"
+sample_data(ps_all)$Type[sample_data(ps_all)$Type=="B"]<-"LP"
+sample_data(ps_all)$Stadium[sample_data(ps_all)$Stadium =="Newborn"]<-"Neonate"
 ps_genus<-tax_glom(ps_all, "genus")
-sample_data(ps_genus)$Type[sample_data(ps_genus)$Type=="K"]<-"TP"
-sample_data(ps_genus)$Type[sample_data(ps_genus)$Type=="B"]<-"LP"
-sample_data(ps_genus)$Stadium[sample_data(ps_genus)$Stadium =="Newborn"]<-"Neonate"
+
