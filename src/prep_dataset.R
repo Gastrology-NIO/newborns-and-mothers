@@ -99,6 +99,12 @@ orig.composition_results = micRoclean(counts = tmp,
                                       control_name = 'Control')
 
 
+orig.composition_results$decontaminated_count
+sum(orig.composition_results$decontaminated_count)/sum(otu_table(ps))
+ps2<- ps
+otu_table(ps2)<-otu_table(orig.composition_results$decontaminated_count, taxa_are_rows=F) 
+
+
 
 sample_data(ps2)$Stadium[sample_data(ps2)$Stadium == "dziecko"] <- "Newborn"
 sample_data(ps2)$Stadium[sample_data(ps2)$Stadium == "matka"] <- "Mother"
@@ -116,3 +122,6 @@ sample_data(ps_all)$Stadium[sample_data(ps_all)$Stadium %in% c("_dziecko_2", "_n
 sample_data(ps_all)$Stadium[sample_data(ps_all)$Stadium %in% c("_matka", "_matka_1", "_matka_2")]<-"Mother"
 sample_data(ps_all)$Type<-sapply(strsplit(sample_data(ps_all)$Organism_id, "_"), `[`, c(2))
 ps_genus<-tax_glom(ps_all, "genus")
+sample_data(ps_genus)$Type[sample_data(ps_genus)$Type=="K"]<-"TP"
+sample_data(ps_genus)$Type[sample_data(ps_genus)$Type=="B"]<-"LP"
+sample_data(ps_genus)$Stadium[sample_data(ps_genus)$Stadium =="Newborn"]<-"Neonate"
