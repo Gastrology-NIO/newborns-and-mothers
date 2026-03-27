@@ -58,9 +58,9 @@ PCoA <- function(ps_all, folder_out){
 }
 
 PCoA_selected<- function(ps_all, save_path, type){
-  pairs<- data.frame(loc1=c('Stool;Mother', 'Cervix;Mother', 'Cheek;Mother', 'Mother placenta;Mother'), loc2=c('Rectum;Newborn','Placenta;Newborn','Stomach;Newborn','Placenta;Newborn'))
   ps_genus<-tax_glom(ps_all, "genus")
-  
+  pairs<- data.frame(loc1=c('Stool;Mother', 'Cervix;Mother', 'Cheek;Mother', 'Mother placenta;Mother'), loc2=c('Rectum;Neonate','Placenta;Neonate','Stomach;Neonate','Placenta;Neonate'))
+
   sample_data(ps_genus)$location_type<-paste0(sample_data(ps_genus)$Location, ";", sample_data(ps_genus)$Stadium,";", sample_data(ps_genus)$Type)
   physeq_clr <- microbiome::transform(ps_genus, "clr")
   ps_dist_matrix <- phyloseq::distance(physeq_clr, method ="euclidean")
