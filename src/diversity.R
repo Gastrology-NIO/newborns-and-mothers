@@ -74,7 +74,7 @@ plot_richness_with_p_val<-function(ps_genus, measure){
     
     
     newborn<-df %>%
-        filter(Stadium== "Newborn") 
+        filter(Stadium== "Neonate") 
     newborn_loc<-sort(unique(newborn$Location))
     
     plot <- ggplot(df, aes(Location, value, fill = Type)) +
@@ -84,8 +84,8 @@ plot_richness_with_p_val<-function(ps_genus, measure){
       theme_bw() +
       theme(axis.text.x = element_text(angle = 90, hjust = 1)) +ggtitle(measure) +
       labs(x =NULL, y = NULL)+
-      scale_fill_manual(values = c("B" = "#e73785ff",
-                               "K" = "#2db62bff"))
+      scale_fill_manual(values = c("LP" = "#e73785ff",
+                               "TP" = "#2db62bff"))
     
     for (location_name in mother_loc){
       position_loc <- position(df, location_name, mother_loc)
@@ -106,7 +106,7 @@ plot_richness_with_p_val<-function(ps_genus, measure){
       p_value <- wilcox.test(value ~ Type, data = df %>% filter(Location == location_name))$p.value
       p_value_star <- p_to_stars(p_value)
       if (p_value_star!="ns"){
-        print("newborn")
+        print("Neonate")
         print(location_name)
         print(p_value_star)
         
@@ -201,7 +201,7 @@ add_clamr_long <- function(plot, x1, x2, y, label_star) {
 
 
 plot_richness_with_p_val_by_pairs<-function(ps_genus, measure, type){
-pairs<- c('Stool;Mother',  'Cheek;Mother', 'Mother placenta;Mother','Rectum;Newborn', 'Cervix;Mother','Placenta;Newborn','Stomach;Newborn','Placenta;Newborn')
+pairs<- c('Stool;Mother',  'Cheek;Mother', 'Mother placenta;Mother','Rectum;Neonate', 'Cervix;Mother','Placenta;Neonate','Stomach;Neonate','Placenta;Neonate')
 pairs_loc<- data.frame(loc1=c('Stool', 'Cervix', 'Cheek', 'Mother placenta'), loc2=c('Rectum','Placenta','Stomach','Placenta'))
 sample_data(ps_genus)$mergedLocStad<-mapply(paste0, sample_data(ps_genus)$Location,";", sample_data(ps_genus)$Stadium)
 df <- plot_richness(ps_genus, "Location", measures = measure)$data
@@ -223,7 +223,7 @@ p<-ggplot(tmp, aes(Location, value, fill=Type)) +
     label = "p.format"
   ) +
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + scale_fill_manual(values = c("B" = "#e73785ff","K" = "#2db62bff"))+ggtitle(measure) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + scale_fill_manual(values = c("LP" = "#e73785ff","TP" = "#2db62bff"))+ggtitle(measure) +
       labs(x =NULL, y = NULL)+ theme(legend.position="none")
   p
 for (pair_no in 1:nrow(pairs_loc)) {
@@ -260,7 +260,7 @@ for (pair_no in 1:nrow(pairs_loc)) {
 
 
 plots <- list()
-type<-"B"
+type<-"LP"
 
 # było f8766dff 00bfc4ff
 shannon<-plot_richness_with_p_val_by_pairs(ps_genus, "Shannon", type)
@@ -297,7 +297,7 @@ plots[[5]] <- fisher
 
 
 plots <- list()
-type<-"K"
+type<-"TP"
 
 # było f8766dff 00bfc4ff
 shannon<-plot_richness_with_p_val_by_pairs(ps_genus, "Shannon", type)
@@ -402,7 +402,7 @@ df <- plot_richness(ps_genus, "Location", measures = "Shannon")$data
 
 # listy porównań osobno dla Mother i Newborn
 comparisons_mother <- combn(unique(df$Location[df$Stadium == "Mother"]), 2, simplify = FALSE)
-comparisons_newborn <- combn(unique(df$Location[df$Stadium == "Newborn"]), 2, simplify = FALSE)
+comparisons_newborn <- combn(unique(df$Location[df$Stadium == "Neonate"]), 2, simplify = FALSE)
 
 
 ggplot(df, aes(Location, value, fill = Type)) +
@@ -430,7 +430,7 @@ ggplot(df, aes(Location, value, fill = Type)) +
     comparisons = comparisons_newborn,
     method = "wilcox.test",
     label = "p.signif",
-    data = subset(df, Stadium == "Newborn")
+    data = subset(df, Stadium == "Neonate")
   ) +
   
   theme_bw() +
