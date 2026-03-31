@@ -142,3 +142,88 @@ for (location in locations){
 
 write.csv2(df_K_result, paste0(folder_out,"Qval_0.1_B.csv"))
 
+
+
+
+# mother stool vs neonat rectum LP 
+df_long=data.frame(group=c("Bacteroides", "Barnesiella", "Alistipes", "Parabacteroides", "Butyricimonas", "Odoribacter"), value=c(), side=c())
+
+# mother stool vs neonat rectum TP (Kontrola)
+df_long=data.frame(group=c("Bacteroides", "Barnesiella", "Alistipes", "Parabacteroides", "Butyricimonas", "Odoribacter"), value=c(), side=c())
+
+# mother gut vs neonat rectum LP
+df_long=data.frame(group=c("Rothia", "Porphyromonas", "Anaerococcus", "Prevotella", "Gemella", "Incertae Sedis"), value=c(), side=c())
+
+# mother gut vs neonat rectum TP
+df_long=data.frame(group=c("Rothia", "Porphyromonas", "Anaerococcus", "Prevotella", "Gemella", "Incertae Sedis"), value=c(), side=c())
+
+# neonatal placenta and maternal cervix LP
+df_long=data.frame(group=c("Lactobacillus", "Clostridium", "Enhydrobacter", "Veillonella", "Gardnerella", "Incertae Sedis groups", "Rheinheimera", "Cupriavidus", "Staphylococcus", "Streptococcus"), value=c(), side=c())
+
+# neonatal placenta and maternal cervix TP
+df_long=data.frame(group=c("Lactobacillus", "Clostridium", "Incertae Sedis_823","Incertae Sedis_497", "Incertae Sedis_375",  "Enhydrobacter", "Veillonella", "Gardnerella",  "Rheinheimera", "Cupriavidus", "Staphylococcus", "Streptococcus"), 
+                   value=c(-8.64957047741181, -6.32549587254307, 3.19200597081558, 3.06365003290667,2.51705282234802, -4.21107186355464), side=c())
+
+# neonatal stomach and maternal cheek LP
+df_long=data.frame(group=c("Prevotella", "Neisseria", "Porphyromonas", "Veillonella", "Haemophilus", "Actinomyces", "Gemella", "Parvimonas", "Acinetobacter", "Pseudomonas", 
+                           "Methylobacterium", "Deinococcus", "Staphylococcus", "Micrococcus", "Kocuria", "Corynebacterium", "Bacteroides", "Barnesiella", "Butyricimonas"), value=c(), side=c())
+
+# neonatal stomach and maternal cheek TP
+df_long=data.frame(group=c("Prevotella", "Neisseria", "Porphyromonas", "Veillonella", "Haemophilus", "Actinomyces", "Gemella", "Parvimonas", "Acinetobacter", "Pseudomonas", 
+                           "Methylobacterium", "Deinococcus", "Staphylococcus", "Micrococcus", "Kocuria", "Corynebacterium", "Bacteroides", "Barnesiella", "Butyricimonas"), value=c(), side=c())
+
+plot_enriched_bacteria<-function(df_long, save_path){
+p <- ggplot(df_long, aes(x = value, y = group)) +
+  geom_col(aes(fill = value < 0)) +
+  scale_fill_manual(
+    values = c("TRUE" = "#EF5350", "FALSE" = "lightblue"),
+    guide = "none"
+  ) +
+  
+  facet_grid(. ~ side, scales = "free_x", space = "free_x") +
+  
+  coord_cartesian(clip = "off") +
+  
+  
+  theme_minimal() +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    plot.margin = margin(20, 160, 20, 140),
+    strip.background = element_blank(),
+  ) +
+  
+  geom_text(
+    aes(
+      x = value,
+      y = group,
+      label = ifelse(
+        value == 0,
+        NA,
+        paste(
+          
+          gsub("g__", "Genus: ",
+               gsub("f__", "Family: ",
+                    gsub(";", "\n", group)
+               )
+          ),
+          sep = "\n"
+        )
+      ),
+      hjust = ifelse(side == "over-represented", 1.05, -0.05)
+    ),
+    lineheight = 0.7,
+    size = 3
+  )
+
+ggsave(
+  filename = paste0(save_path),
+  plot = p,
+  width = 30,
+  height = 15,
+  units = "cm"
+)
+  return(p)
+  }
+
