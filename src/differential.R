@@ -155,7 +155,22 @@ df_long=data.frame(group=c("Barnesiella", "Butyricimonas", "Family XIII AD3011 g
 df_long$side<-NaN
 df_long$side[df_long$value>0]<-"over-represented"
 df_long$side[df_long$value<=0]<-"aunder-represented"
-
+df_long <- df_long[df_long$group %in% c(
+  "Barnesiella",
+  "Butyricimonas",
+  "Alistipes",
+  "Bacteroides",
+  "Parabacteroides",
+  "Rothia_2",
+  "Porphyromonas",
+  "Odoribacter",
+  "Butyricimonas",
+  "Anaerococcus",
+  "Rothia_2",
+  "Porphyromonas",
+  "Prevotella",
+  "Gemella"
+),]
 df_long <- df_long %>%
   arrange(value) %>%
   mutate(group = factor(group, levels = group))
@@ -181,7 +196,22 @@ df_long=data.frame(group=c("Bacteroides", "Alistipes", "Barnesiella", "Parabacte
 df_long$side<-NaN
 df_long$side[df_long$value>0]<-"over-represented"
 df_long$side[df_long$value<=0]<-"aunder-represented"
-
+df_long <- df_long[df_long$group %in% c(
+  "Barnesiella",
+  "Butyricimonas",
+  "Alistipes",
+  "Bacteroides",
+  "Parabacteroides",
+  "Rothia_2",
+  "Porphyromonas",
+  "Odoribacter",
+  "Butyricimonas",
+  "Anaerococcus",
+  "Rothia_2",
+  "Porphyromonas",
+  "Prevotella",
+  "Gemella"
+),]
 df_long <- df_long %>%
   arrange(value) %>%
   mutate(group = factor(group, levels = group))
@@ -204,6 +234,22 @@ df_long=data.frame(group=c("Incertae Sedis_823", "Corynebacterium_2", "Incertae 
 df_long$side<-NaN
 df_long$side[df_long$value>0]<-"over-represented"
 df_long$side[df_long$value<=0]<-"aunder-represented"
+
+df_long <- df_long[df_long$group %in% c(
+  "Rheinheimera_2",
+  "Lactobacillus",
+  "Clostridium",
+  "Enhydrobacter_2",
+  "Streptococcus",
+  "Cupriavidus_2",
+  "Staphylococcus",
+  "Lactobacillus",
+  "Enhydrobacter_2",
+  "Gardnerella_2",
+  "Clostridium",
+  "Veillonella"
+)
+,]
 
 df_long <- df_long %>%
   arrange(value) %>%
@@ -248,6 +294,22 @@ df_long$side<-NaN
 df_long$side[df_long$value>0]<-"over-represented"
 df_long$side[df_long$value<=0]<-"aunder-represented"
 
+
+df_long <- df_long[df_long$group %in% c(
+  "Rheinheimera_2",
+  "Lactobacillus",
+  "Clostridium",
+  "Enhydrobacter_2",
+  "Streptococcus",
+  "Cupriavidus_2",
+  "Staphylococcus",
+  "Lactobacillus",
+  "Enhydrobacter_2",
+  "Gardnerella_2",
+  "Clostridium",
+  "Veillonella"
+)
+,]
 df_long <- df_long %>%
   arrange(value) %>%
   mutate(group = factor(group, levels = group))
@@ -394,6 +456,30 @@ df_long$side<-NaN
 df_long$side[df_long$value>0]<-"over-represented"
 df_long$side[df_long$value<=0]<-"aunder-represented"
 
+gatunki <- c(
+  "Micrococcus_2",
+  "Staphylococcus",
+  "Pseudomonas_2",
+  "Kocuria_2",
+  "Acinetobacter_2",
+  "Methylobacterium",
+  "Deinococcus",
+  "Corynebacterium_2",
+  "Bacteroides",
+  "Prevotella",
+  "Neisseria_2",
+  "Parvimonas",
+  "Veillonella",
+  "Haemophilus_2",
+  "Actinomyces_2",
+  "Porphyromonas",
+  "Gemella",
+  "Barnesiella",
+  "Butyricimonas"
+)
+
+df_long <- df_long[df_long$group %in% gatunki,]
+
 df_long <- df_long %>%
   arrange(value) %>%
   mutate(group = factor(group, levels = group))
@@ -479,6 +565,7 @@ df_long=data.frame(group=c(
 df_long$side<-NaN
 df_long$side[df_long$value>0]<-"over-represented"
 df_long$side[df_long$value<=0]<-"aunder-represented"
+df_long <- df_long[df_long$group %in% gatunki,]
 
 df_long <- df_long %>%
   arrange(value) %>%
@@ -488,23 +575,6 @@ title2<-"Neonat stomach vs mother cheek LP"
 p6<-plot_enriched_bacteria(df_long, title2)
 plots[[6]] <- p6
 
-
-# Neonat placenta vs mother placenta TP
-df_long=data.frame(group=, 
-  value= 
-)
-
-df_long$side<-NaN
-df_long$side[df_long$value>0]<-"over-represented"
-df_long$side[df_long$value<=0]<-"aunder-represented"
-
-df_long <- df_long %>%
-  arrange(value) %>%
-  mutate(group = factor(group, levels = group))
-
-title2<-"Neonat placenta vs mother placenta TP"
-p7<-plot_enriched_bacteria(df_long, title2)
-plots[[7]] <- p7
 
 
 
