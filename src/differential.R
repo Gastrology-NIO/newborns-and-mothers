@@ -586,7 +586,7 @@ plots[[6]] <- p6
 ggsave(
      "different.svg",
      plot = p,
-     width = 20, height = 18,     
+     width = 18, height = 18,     
 )
 plot_enriched_bacteria<-function(df_long, title){
 p <- ggplot(df_long, aes(x = value, y = group)) +
