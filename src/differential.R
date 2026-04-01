@@ -622,3 +622,5 @@ p <- ggplot(df_long, aes(x = value, y = group)) +
 )+ggtitle(title)
   return(p)}
 
+# #2db62bff - zielony tp był #add8e6ff
+# #e73785ff - różowy LP był #ef5350ff
