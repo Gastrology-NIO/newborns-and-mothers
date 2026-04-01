@@ -142,8 +142,8 @@ for (location in locations){
 
 write.csv2(df_K_result, paste0(folder_out,"Qval_0.1_B.csv"))
 
-
-
+library(patchwork)
+plots <- list()
 
 # mother stool vs neonat rectum LP 
 df_long=data.frame(group=c("Barnesiella", "Butyricimonas", "Family XIII AD3011 group", "Alistipes", "[Eubacterium] eligens group", "Monoglobus", "Bacteroides", "Parabacteroides", "Sutterella_2", "Ruminococcus", "Incertae Sedis_218", "[Eubacterium] siraeum group", 
@@ -154,57 +154,377 @@ df_long=data.frame(group=c("Barnesiella", "Butyricimonas", "Family XIII AD3011 g
                           ))
 df_long$side<-NaN
 df_long$side[df_long$value>0]<-"over-represented"
-df_long$side[df_long$value<=0]<-"under-represented"
+df_long$side[df_long$value<=0]<-"aunder-represented"
 
-save_path<-"mother_stool_rectum_lp.png"
-p<-plot_enriched_bacteria(df_long)
-ggsave(
-  filename = paste0(save_path),
-  plot = p,
-  width = 30,
-  height = 15,
-  units = "cm"
-)
-
+df_long <- df_long %>%
+  arrange(value) %>%
+  mutate(group = factor(group, levels = group))
+title<-"Mother stool vs neonat rectum LP"
+p<-plot_enriched_bacteria(df_long, title)
+plots[[1]] <- p 
 
 # mother stool vs neonat rectum TP (Kontrola)
-df_long=data.frame(group=c("Bacteroides", "Alistipes", "Barnesiella", "Parabacteroides", "Incertae Sedis_813", "Odoribacter", "Bilophila_2", "Butyricimonas", "Phascolarctobacterium", "Megasphaera"), 
-                   value=c(5.6317635, 4.204874179, 5.724571252, 3.002695564, 4.752656243, 3.29411916, 3.065767166, 3.752706889, 4.254214737, 3.854237555))
+df_long=data.frame(group=c("Bacteroides", "Alistipes", "Barnesiella", "Parabacteroides", "Incertae Sedis_813", "Odoribacter", "Bilophila_2", "Butyricimonas", "Phascolarctobacterium", "Megasphaera", 
+                          "Hoylesella", "Incertae Sedis_497", "Anaerococcus", "Rothia_2", 
+  "Howardella", "Porphyromonas", "Campylobacter", "Leuconostoc", 
+  "S5-A14a", "Sphingobium_2", "Peptoniphilus", "Prevotella", 
+  "Streptococcus", "Schaalia", "Incertae Sedis_823", 
+  "Incertae Sedis_700", "Gemella", "Incertae Sedis_310"), 
+                   value=c(5.6317635, 4.204874179, 5.724571252, 3.002695564, 4.752656243, 3.29411916, 3.065767166, 3.752706889, 4.254214737, 3.854237555, 
+                          -8.481330028, -5.208367693, -6.3103908, -4.173473615,
+  -3.398012531, -4.769111267, -5.139803434, -4.173474956,
+  -3.929030436, -4.878533337, -5.872864194, -6.214844003,
+  -2.888941051, -3.139913279, -2.912656747, -2.531498773,
+  -2.406810023, -1.809682004
+                          ))
+
 df_long$side<-NaN
 df_long$side[df_long$value>0]<-"over-represented"
-df_long$side[df_long$value<=0]<-"under-represented"
+df_long$side[df_long$value<=0]<-"aunder-represented"
 
-save_path<-"mother_stool_rectum_tp.png"
-p2<-plot_enriched_bacteria(df_long, save_path)
+df_long <- df_long %>%
+  arrange(value) %>%
+  mutate(group = factor(group, levels = group))
 
-# mother gut vs neonat rectum LP
-df_long=data.frame(group=c("Rothia", "Porphyromonas", "Anaerococcus", "Prevotella", "Gemella", "Incertae Sedis"), value=c(), side=c())
+title2<-"Mother stool vs neonat rectum TP"
+p2<-plot_enriched_bacteria(df_long, title2)
+plots[[2]] <- p2
 
-# mother gut vs neonat rectum TP
-df_long=data.frame(group=c("Rothia", "Porphyromonas", "Anaerococcus", "Prevotella", "Gemella", "Incertae Sedis"), value=c(), side=c())
+# Neonat placenta vs mother cervix TP
+df_long=data.frame(group=c("Incertae Sedis_823", "Corynebacterium_2", "Incertae Sedis_497",
+  "Rothia_2", "Peptostreptococcus", "Incertae Sedis_375",
+  "Campylobacter", "Rheinheimera_2", "Bilophila_2",
+  "Lactobacillus", "Clostridium", "Enhydrobacter_2",
+  "Howardella", "Litchfieldia"), 
+                   value=c(3.192005971, 2.348829513, 3.063650033, 3.225880615,
+  2.830260626, 2.517052822, 2.461695686, 3.334372413,
+  2.916675213, -8.649570477, -6.325495873, -4.211071864,
+  -6.366283444, -4.614924484))
 
-# neonatal placenta and maternal cervix LP
-df_long=data.frame(group=c("Lactobacillus", "Clostridium", "Enhydrobacter", "Veillonella", "Gardnerella", "Incertae Sedis groups", "Rheinheimera", "Cupriavidus", "Staphylococcus", "Streptococcus"), value=c(), side=c())
+df_long$side<-NaN
+df_long$side[df_long$value>0]<-"over-represented"
+df_long$side[df_long$value<=0]<-"aunder-represented"
 
-# neonatal placenta and maternal cervix TP
-df_long=data.frame(group=c("Lactobacillus", "Clostridium", "Incertae Sedis_823","Incertae Sedis_497", "Incertae Sedis_375",  "Enhydrobacter", "Veillonella", "Gardnerella",  "Rheinheimera", "Cupriavidus", "Staphylococcus", "Streptococcus"), 
-                   value=c(-8.64957047741181, -6.32549587254307, 3.19200597081558, 3.06365003290667,2.51705282234802, -4.21107186355464), side=c())
+df_long <- df_long %>%
+  arrange(value) %>%
+  mutate(group = factor(group, levels = group))
 
-# neonatal stomach and maternal cheek LP
-df_long=data.frame(group=c("Prevotella", "Neisseria", "Porphyromonas", "Veillonella", "Haemophilus", "Actinomyces", "Gemella", "Parvimonas", "Acinetobacter", "Pseudomonas", 
-                           "Methylobacterium", "Deinococcus", "Staphylococcus", "Micrococcus", "Kocuria", "Corynebacterium", "Bacteroides", "Barnesiella", "Butyricimonas"), value=c(), side=c())
+title2<-"Neonat placenta vs mother cervix LP"
+p3<-plot_enriched_bacteria(df_long, title2)
+plots[[3]] <- p3
 
-# neonatal stomach and maternal cheek TP
-df_long=data.frame(group=c("Prevotella", "Neisseria", "Porphyromonas", "Veillonella", "Haemophilus", "Actinomyces", "Gemella", "Parvimonas", "Acinetobacter", "Pseudomonas", 
-                           "Methylobacterium", "Deinococcus", "Staphylococcus", "Micrococcus", "Kocuria", "Corynebacterium", "Bacteroides", "Barnesiella", "Butyricimonas"), value=c(), side=c())
 
-plot_enriched_bacteria<-function(df_long, save_path){
+# Neonat placenta vs mother cervix LP
+df_long=data.frame(group=c(
+  "Streptococcus",
+  "Cupriavidus_2",
+  "Staphylococcus",
+  "Corynebacterium_2",
+  "Prevotella",
+  "Incertae Sedis_497",
+  "Lactobacillus",
+  "Enhydrobacter_2",
+  "Gardnerella_2",
+  "Clostridium",
+  "Finegoldia",
+  "Veillonella"
+), 
+                   value=c(
+  4.220038,
+  3.267905,
+  3.451095,
+  2.8449,
+  2.816292,
+  2.339428,
+  -7.56392,
+  -5.3046,
+  -6.06571,
+  -6.53919,
+  -2.51187,
+  -1.66644
+))
+
+df_long$side<-NaN
+df_long$side[df_long$value>0]<-"over-represented"
+df_long$side[df_long$value<=0]<-"aunder-represented"
+
+df_long <- df_long %>%
+  arrange(value) %>%
+  mutate(group = factor(group, levels = group))
+
+title2<-"Neonat placenta vs mother cervix TP"
+p4<-plot_enriched_bacteria(df_long, title2)
+plots[[4]] <- p4
+
+# Neonat stomach vs mother cheek TP
+df_long=data.frame(group= c(
+  "Rheinheimera_2",
+  "Micrococcus_2",
+  "Staphylococcus",
+  "Pseudomonas_2",
+  "Kocuria_2",
+  "Brevundimonas_2",
+  "Acinetobacter_2",
+  "Enhydrobacter_2",
+  "Chryseobacterium",
+  "Tepidimonas_2",
+  "Pseudoxanthomonas_2",
+  "Methylobacterium",
+  "Anaerococcus",
+  "Facklamia",
+  "Nocardioides_2",
+  "Peptoniphilus",
+  "Deinococcus",
+  "Incertae Sedis_310",
+  "Corynebacterium_2",
+  "Enterococcus",
+  "Incertae Sedis_648",
+  "Bacteroides",
+  "Cupriavidus_2",
+  "Pedobacter",
+  "Lactobacillus",
+  "Comamonas_2",
+  "Exiguobacterium",
+  "Acidibacter_2",
+  "Lactococcus",
+  "Incertae Sedis_813",
+  "Leyella",
+  "Sphingomonas_2",
+  "Moraxella_2",
+  "Prevotella",
+  "Rothia_2",
+  "Neisseria_2",
+  "Parvimonas",
+  "Abiotrophia",
+  "Lautropia_2",
+  "Veillonella",
+  "Haemophilus_2",
+  "Hoylesella",
+  "Campylobacter",
+  "Segatella",
+  "Filifactor",
+  "Actinomyces_2",
+  "Selenomonas",
+  "Lancefieldella",
+  "Aggregatibacter_2",
+  "Catonella",
+  "Incertae Sedis_702",
+  "Porphyromonas",
+  "Anaeroglobus",
+  "Alloprevotella",
+  "F0058",
+  "Anoxybacillus",
+  "Scardovia_2",
+  "Schaalia",
+  "Shuttleworthia",
+  "Peptostreptococcus",
+  "Cardiobacterium_2",
+  "Gemella",
+  "Streptococcus"
+)
+, 
+                   value=c(
+  5.040970751,
+  4.325281842,
+  4.0676956,
+  4.45852139,
+  4.473808821,
+  5.003485204,
+  4.025365869,
+  5.05237412,
+  5.344487794,
+  4.373954428,
+  4.741492242,
+  4.21238448,
+  3.589169658,
+  4.866240663,
+  4.021275846,
+  3.572203984,
+  4.855118749,
+  4.27738857,
+  2.780170802,
+  2.842740257,
+  3.530762568,
+  3.44995154,
+  2.335999058,
+  3.367193554,
+  2.984748409,
+  1.684517173,
+  2.504504383,
+  3.611245812,
+  2.531682003,
+  2.453172967,
+  3.67293393,
+  3.577580851,
+  1.480211936,
+  -3.60947264,
+  -3.65462063,
+  -3.875552285,
+  -3.873406355,
+  -3.497734238,
+  -3.881929807,
+  -2.715905996,
+  -3.491323086,
+  -2.940959037,
+  -2.638444179,
+  -1.995165818,
+  -3.495602514,
+  -1.922295441,
+  -2.377612566,
+  -1.753534983,
+  -2.206405678,
+  -2.490990555,
+  -1.920986764,
+  -2.206692359,
+  -2.258815627,
+  -2.042906558,
+  -2.616732681,
+  -2.444576693,
+  -2.758593865,
+  -1.705684059,
+  -1.843664139,
+  -2.334495436,
+  -1.708046344,
+  -2.648721822,
+  -1.888019343
+)
+)
+
+df_long$side<-NaN
+df_long$side[df_long$value>0]<-"over-represented"
+df_long$side[df_long$value<=0]<-"aunder-represented"
+
+df_long <- df_long %>%
+  arrange(value) %>%
+  mutate(group = factor(group, levels = group))
+
+title2<-"Neonat stomach vs mother cheek TP"
+p5<-plot_enriched_bacteria(df_long, title2)
+plots[[5]] <- p5
+
+
+# Neonat stomach vs mother cheek LP
+df_long=data.frame(group=c(
+  "Micrococcus_2",
+  "Acinetobacter_2",
+  "Bilophila_2",
+  "Nocardioides_2",
+  "Staphylococcus",
+  "Pseudomonas_2",
+  "Methylobacterium",
+  "Deinococcus",
+  "Bacteroides",
+  "Lactobacillus",
+  "Kocuria_2",
+  "Incertae Sedis_497",
+  "Enhydrobacter_2",
+  "Sutterella_2",
+  "Scardovia_2",
+  "Corynebacterium_2",
+  "Barnesiella",
+  "Butyricimonas",
+  "Peptoniphilus",
+  "Comamonas_2",
+  "Brevibacterium_2",
+  "Rothia_2",
+  "Neisseria_2",
+  "Porphyromonas",
+  "Hoylesella",
+  "Prevotella",
+  "Actinomyces_2",
+  "Gemella",
+  "Veillonella",
+  "Treponema",
+  "Campylobacter",
+  "Kingella_2",
+  "Lautropia_2"
+), 
+  value= c(
+  4.672029609,
+  6.433279942,
+  4.209939866,
+  5.361072212,
+  3.91134557,
+  3.437474433,
+  4.09791136,
+  4.75240512,
+  2.976468637,
+  3.763053505,
+  3.816924981,
+  3.437522801,
+  3.130345079,
+  2.670597547,
+  3.237130067,
+  2.194698684,
+  3.373850836,
+  3.837504838,
+  2.524073495,
+  2.381918758,
+  4.39367517,
+  -3.52754045,
+  -3.910799306,
+  -3.041976486,
+  -2.985485278,
+  -3.063042592,
+  -2.753877557,
+  -3.301226832,
+  -2.720580739,
+  -2.868067311,
+  -1.93239652,
+  -2.305286137,
+  -2.829893653
+)
+)
+
+df_long$side<-NaN
+df_long$side[df_long$value>0]<-"over-represented"
+df_long$side[df_long$value<=0]<-"aunder-represented"
+
+df_long <- df_long %>%
+  arrange(value) %>%
+  mutate(group = factor(group, levels = group))
+
+title2<-"Neonat stomach vs mother cheek LP"
+p6<-plot_enriched_bacteria(df_long, title2)
+plots[[6]] <- p6
+
+
+# Neonat placenta vs mother placenta TP
+df_long=data.frame(group=, 
+  value= 
+)
+
+df_long$side<-NaN
+df_long$side[df_long$value>0]<-"over-represented"
+df_long$side[df_long$value<=0]<-"aunder-represented"
+
+df_long <- df_long %>%
+  arrange(value) %>%
+  mutate(group = factor(group, levels = group))
+
+title2<-"Neonat placenta vs mother placenta TP"
+p7<-plot_enriched_bacteria(df_long, title2)
+plots[[7]] <- p7
+
+
+
+  library(patchwork)
+
+  p<-wrap_plots(plots, ncol = 2) +
+    plot_annotation(tag_levels = "A")
+
+ggsave(
+     "different.svg",
+     plot = p,
+     width = 20, height = 18,     
+)
+plot_enriched_bacteria<-function(df_long, title){
 p <- ggplot(df_long, aes(x = value, y = group)) +
   geom_col(aes(fill = value < 0)) +
-  # scale_fill_manual(
-  #   values = c("TRUE" = "#EF5350", "FALSE" = "lightblue"),
-  #   guide = "none"
-  # ) +
+  scale_fill_manual(
+    values = c("TRUE" = "#EF5350", "FALSE" = "lightblue"),
+    guide = "none"
+  ) +
   
   facet_grid(. ~ side, scales = "free_x", space = "free_x") +
   
@@ -219,28 +539,16 @@ p <- ggplot(df_long, aes(x = value, y = group)) +
     plot.margin = margin(20, 160, 20, 140),
     strip.background = element_blank(),
   ) +
-  
   geom_text(
-    aes(
-      x = value,
-      y = group,
-      label = ifelse(
-        value == 0,
-        NA,
-        paste(
-          
-          gsub("g__", "Genus: ",
-               gsub("f__", "Family: ",
-                    gsub(";", "\n", group)
-               )
-          ),
-          sep = "\n"
-        )
-      ),
-      hjust = ifelse(side == "over-represented", 1.05, -0.05)
-    ),
-    lineheight = 0.7,
-    size = 3
-  )
+  aes(
+    x = value + ifelse(value > 0, 0.2, -0.2),
+    label = gsub("g__", "Genus: ",
+            gsub("f__", "Family: ",
+            gsub(";", "\n", group))),
+    hjust = ifelse(value > 0, 0, 1)
+  ),
+  size = 3,
+  lineheight = 0.7
+)+ggtitle(title)
   return(p)}
 
