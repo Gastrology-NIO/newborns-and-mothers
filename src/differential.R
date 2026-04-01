@@ -146,10 +146,36 @@ write.csv2(df_K_result, paste0(folder_out,"Qval_0.1_B.csv"))
 
 
 # mother stool vs neonat rectum LP 
-df_long=data.frame(group=c("Bacteroides", "Barnesiella", "Alistipes", "Parabacteroides", "Butyricimonas", "Odoribacter"), value=c(), side=c())
+df_long=data.frame(group=c("Barnesiella", "Butyricimonas", "Family XIII AD3011 group", "Alistipes", "[Eubacterium] eligens group", "Monoglobus", "Bacteroides", "Parabacteroides", "Sutterella_2", "Ruminococcus", "Incertae Sedis_218", "[Eubacterium] siraeum group", 
+                          "Incertae Sedis_497", "Pseudomonas_2", "Rothia_2", "Porphyromonas", "Negativibacillus", "Faecalimonas", "Acutalibacter", "Intestinimonas", "Howardella", "Schaalia"), 
+                   value=c(3.68825825, 3.802639199, 3.43642963, 2.532370646, 2.884823725, 3.080801731, 2.973559629, 3.238879598, 2.80509465, 2.138947076, 1.537903123, 2.263655423, 
+                           -4.095654736, -5.494754708, -3.290578553, -5.313825699, -3.981574484, -3.045024343,-2.131867362,-3.078874751,-2.464869761,-2.877913715
+
+                          ))
+df_long$side<-NaN
+df_long$side[df_long$value>0]<-"over-represented"
+df_long$side[df_long$value<=0]<-"under-represented"
+
+save_path<-"mother_stool_rectum_lp.png"
+p<-plot_enriched_bacteria(df_long)
+ggsave(
+  filename = paste0(save_path),
+  plot = p,
+  width = 30,
+  height = 15,
+  units = "cm"
+)
+
 
 # mother stool vs neonat rectum TP (Kontrola)
-df_long=data.frame(group=c("Bacteroides", "Barnesiella", "Alistipes", "Parabacteroides", "Butyricimonas", "Odoribacter"), value=c(), side=c())
+df_long=data.frame(group=c("Bacteroides", "Alistipes", "Barnesiella", "Parabacteroides", "Incertae Sedis_813", "Odoribacter", "Bilophila_2", "Butyricimonas", "Phascolarctobacterium", "Megasphaera"), 
+                   value=c(5.6317635, 4.204874179, 5.724571252, 3.002695564, 4.752656243, 3.29411916, 3.065767166, 3.752706889, 4.254214737, 3.854237555))
+df_long$side<-NaN
+df_long$side[df_long$value>0]<-"over-represented"
+df_long$side[df_long$value<=0]<-"under-represented"
+
+save_path<-"mother_stool_rectum_tp.png"
+p2<-plot_enriched_bacteria(df_long, save_path)
 
 # mother gut vs neonat rectum LP
 df_long=data.frame(group=c("Rothia", "Porphyromonas", "Anaerococcus", "Prevotella", "Gemella", "Incertae Sedis"), value=c(), side=c())
@@ -175,10 +201,10 @@ df_long=data.frame(group=c("Prevotella", "Neisseria", "Porphyromonas", "Veillone
 plot_enriched_bacteria<-function(df_long, save_path){
 p <- ggplot(df_long, aes(x = value, y = group)) +
   geom_col(aes(fill = value < 0)) +
-  scale_fill_manual(
-    values = c("TRUE" = "#EF5350", "FALSE" = "lightblue"),
-    guide = "none"
-  ) +
+  # scale_fill_manual(
+  #   values = c("TRUE" = "#EF5350", "FALSE" = "lightblue"),
+  #   guide = "none"
+  # ) +
   
   facet_grid(. ~ side, scales = "free_x", space = "free_x") +
   
@@ -216,14 +242,5 @@ p <- ggplot(df_long, aes(x = value, y = group)) +
     lineheight = 0.7,
     size = 3
   )
-
-ggsave(
-  filename = paste0(save_path),
-  plot = p,
-  width = 30,
-  height = 15,
-  units = "cm"
-)
-  return(p)
-  }
+  return(p)}
 
