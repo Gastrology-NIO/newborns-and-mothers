@@ -1,0 +1,1 @@
+This project contains scripts that were used to calculate statistics in a project on microbial differences between mothers and neonates. The data needed for the calculations are included in the BioProject repository.
