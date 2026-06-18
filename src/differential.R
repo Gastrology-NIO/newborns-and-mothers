@@ -1,5 +1,6 @@
 library(patchwork)
-
+library(dplyr)
+library(ggplot2)
 calculate_ancombc2_location_vs_location_one_type<-function(ps, type, folder_out){
 ps_genus_B<-subset_samples(ps, Type ==type)
 sample_data(ps_genus_B)$mergedLocStad<-mapply(paste0, sample_data(ps_genus_B)$Location,";", sample_data(ps_genus_B)$Stadium)
@@ -66,7 +67,7 @@ df_long <- df_long %>%
   mutate(group = factor(group, levels = group))
 title<-"Mother stool vs neonat rectum LP"
 p<-plot_enriched_bacteria(df_long, title)
-plots[[1]] <- p 
+plots[[1]] <- p +xlab("log‑fold change")
 
 # mother stool vs neonat rectum TP (Kontrola)
 df_long=data.frame(group=c("Bacteroides", "Alistipes", "Barnesiella", "Parabacteroides", "Incertae Sedis_813", "Odoribacter", "Bilophila_2", "Butyricimonas", "Phascolarctobacterium", "Megasphaera", 
@@ -89,7 +90,7 @@ df_long <- df_long %>%
 
 title2<-"Mother stool vs neonat rectum TP"
 p2<-plot_enriched_bacteria(df_long, title2)
-plots[[2]] <- p2
+plots[[2]] <- p2+xlab("log‑fold change")
 
 # Neonat placenta vs mother cervix TP
 df_long=data.frame(group=c("Incertae Sedis_823", "Corynebacterium_2", "Incertae Sedis_497","Rothia_2", "Peptostreptococcus", "Incertae Sedis_375",
@@ -111,7 +112,7 @@ df_long <- df_long %>%
 
 title2<-"Neonat placenta vs mother cervix LP"
 p3<-plot_enriched_bacteria(df_long, title2)
-plots[[3]] <- p3
+plots[[3]] <- p3+xlab("log‑fold change")
 
 
 # Neonat placenta vs mother cervix LP
@@ -139,7 +140,7 @@ df_long <- df_long %>%
 
 title2<-"Neonat placenta vs mother cervix TP"
 p4<-plot_enriched_bacteria(df_long, title2)
-plots[[4]] <- p4
+plots[[4]] <- p4+xlab("log‑fold change")
 
 # Neonat stomach vs mother cheek TP
 df_long=data.frame(group=c(
@@ -183,7 +184,7 @@ df_long <- df_long %>%
 
 title2<-"Neonat stomach vs mother cheek TP"
 p5<-plot_enriched_bacteria(df_long, title2)
-plots[[5]] <- p5
+plots[[5]] <- p5+xlab("log‑fold change")
 
 
 # Neonat stomach vs mother cheek LP
@@ -209,7 +210,7 @@ df_long <- df_long %>%
 
 title2<-"Neonat stomach vs mother cheek LP"
 p6<-plot_enriched_bacteria(df_long, title2)
-plots[[6]] <- p6
+plots[[6]] <- p6+xlab("log-fold change")
 
 
 
